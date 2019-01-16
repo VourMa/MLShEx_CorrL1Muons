@@ -129,8 +129,7 @@ void TMVARegression_Impr_08_12( TString myMethodList = "" )
    mycut += " ( fabs( L1muon_eta ) > 0.8 && fabs( L1muon_eta ) <= 1.2 ) ";
    
 
-   dataloader->PrepareTrainingAndTestTree( mycut,"nTrain_Regression=50000:nTest_Regression=50000:SplitMode=Random:NormMode=NumEvents:!V" );
-   //dataloader->PrepareTrainingAndTestTree( mycut,"SplitMode=Random:NormMode=NumEvents:!V" );
+   dataloader->PrepareTrainingAndTestTree( mycut,"SplitMode=Random:NormMode=NumEvents:!V" );
    
 
    // Book MVA methods
