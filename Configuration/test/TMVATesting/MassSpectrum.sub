@@ -1,0 +1,8 @@
+executable              = MassSpectrum.sh
+arguments               = $(ClusterID) $(ProcId)
+output                  = MassSpectrum.$(ClusterId).$(ProcId).out
+error                   = MassSpectrum.$(ClusterId).$(ProcId).err
+log                     = MassSpectrum.$(ClusterId).log
+
++JobFlavour = "espresso"
+queue

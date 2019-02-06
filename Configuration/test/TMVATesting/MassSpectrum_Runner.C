@@ -4,35 +4,40 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
-void MassSpectrum_Runner()
+void MassSpectrum_Runner(TString dataset, bool debug = 0)
 {
 	//___ Input - Output ___//
 	TChain *Input = new TChain("mytree");
-	//Input->Add("../FriendTree_ptCorr_test.root");
-	Input->Add("../L1toRecoMatchPlots_tight_B.root");
-	Input->Add("../L1toRecoMatchPlots_tight_C.root");
-	Input->Add("../L1toRecoMatchPlots_tight_E.root");
-	Input->Add("../L1toRecoMatchPlots_tight_F.root");
+	TString outSuffix = dataset;
+	TString NTupleDir = "/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer/CMSSW_10_1_9_patch1/src/L1uGMTAnalyzer/Configuration/test/";
 	
-//	Input->Add("../L1toRecoMatchPlots_Charm_tight_B.root");
-//	Input->Add("../L1toRecoMatchPlots_Charm_tight_C.root");
+	if( dataset == "ZeroBias2018" ) {
+		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_B.root");
+		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_C.root");
+		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_E.root");
+		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_F.root");
+		outSuffix += "_BCEF";
+	}
+	else if( dataset == "Charmonium2018" ) {
+		Input->Add(NTupleDir + "L1toRecoMatchPlots_Charm_tight_B.root");
+		Input->Add(NTupleDir + "L1toRecoMatchPlots_Charm_tight_C.root");
+		outSuffix += "_BC";
+	}
+	else if( dataset == "ZeroBias2019" ) {
+		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_B.root");
+		outSuffix += "_B";
+	}
+	else {
+		cout << "Non valid dataset, exiting." << endl;
+		return;
+	}
 	
-	TFile * out = new TFile("MassSpectrum_BCEF.root","recreate");
-	
-//	TFile * out = new TFile("MassSpectrum_Charm_BC.root","recreate");
-
-
-	//Definitions	
-	TH1D * h_recomll = new TH1D("h_recomll", "M_{ll}(reco)", 300, 0.0, 30.0);
-	TH1D * h_L1mll = new TH1D("h_L1mll", "M_{ll}(L1)", 300, 0.0, 30.0);
-	TH1D * h_L1mllCorr = new TH1D("h_L1mllCorr", "M_{ll}(L1(Corrected))", 300, 0.0, 30.0);
-	TH1D * h_L1mll_JPsi = new TH1D("h_L1mll_JPsi", "M_{ll}(L1,J/Psi)", 100, 0.0, 10.0);
-	TH1D * h_L1mllCorr_JPsi = new TH1D("h_L1mllCorr_JPsi", "M_{ll}(L1(Corrected),J/Psi)", 100, 0.0, 10.0);
+	TFile * out = new TFile("MassSpectrum_Results/MassSpectrum_"+outSuffix+".root","recreate");
 
 
 	//Running
 	MassSpectrum Read(Input);
-	Read.Loop(h_recomll, h_L1mll, h_L1mllCorr, h_L1mll_JPsi, h_L1mllCorr_JPsi);
+	Read.Loop(out, debug);
 	
 	out->Write();
 	out->Close();

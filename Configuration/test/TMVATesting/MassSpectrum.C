@@ -41,13 +41,22 @@ void MassSpectrum::correctThePhi(float L1muon_eta_, double & DphiL1Reco, double 
 }
 
 
-void MassSpectrum::Loop(TH1D * h_recomll,TH1D * h_L1mll,TH1D * h_L1mllCorr, TH1D * h_L1mll_JPsi, TH1D * h_L1mllCorr_JPsi)
+void MassSpectrum::Loop(TFile * out, bool debug)
 {
 	if (fChain == 0) return;
 	
 	Long64_t nentries = fChain->GetEntriesFast();
-	//cout << "Number of entries:" << nentries << endl;
-//	nentries = 10000;
+//	cout << "Number of entries:" << nentries << endl;
+	if(debug) nentries = 10000;
+	
+	out->cd();
+	
+	//Definitions
+	TH1D * h_recomll = new TH1D("h_recomll", "M_{ll}(reco)", 300, 0.0, 30.0);
+	TH1D * h_L1mll = new TH1D("h_L1mll", "M_{ll}(L1)", 300, 0.0, 30.0);
+	TH1D * h_L1mllCorr = new TH1D("h_L1mllCorr", "M_{ll}(L1(Corrected))", 300, 0.0, 30.0);
+	TH1D * h_L1mll_JPsi = new TH1D("h_L1mll_JPsi", "M_{ll}(L1,J/Psi)", 100, 0.0, 10.0);
+	TH1D * h_L1mllCorr_JPsi = new TH1D("h_L1mllCorr_JPsi", "M_{ll}(L1(Corrected),J/Psi)", 100, 0.0, 10.0);
 	
 	Long64_t nbytes = 0, nb = 0;
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -55,7 +64,7 @@ void MassSpectrum::Loop(TH1D * h_recomll,TH1D * h_L1mll,TH1D * h_L1mllCorr, TH1D
 		if (ientry < 0) break;
 		nb = fChain->GetEntry(jentry);   nbytes += nb;
 		
-//		if( ientry % 1000000 == 0 ) cout << "I have processed " << ientry << " events!" << endl;
+		if( ientry % 1000000 == 0 ) cout << "I have processed " << ientry << " events!" << endl;
 		
 		if( recomuon_N < 2 ) continue;
 		
