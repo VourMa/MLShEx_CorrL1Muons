@@ -1,0 +1,8 @@
+executable              = L1toRecoMatcher.sh
+arguments               = ZeroBias2018 ABC tight #ZeroBias2017 Charmonium2017
+output                  = L1toRecoMatcher.$(ClusterId).$(ProcId).out
+error                   = L1toRecoMatcher.$(ClusterId).$(ProcId).err
+log                     = L1toRecoMatcher.$(ClusterId).log
+
++JobFlavour = "tomorrow"
+queue 100

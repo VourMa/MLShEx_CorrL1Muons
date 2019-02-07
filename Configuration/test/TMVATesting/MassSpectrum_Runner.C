@@ -11,19 +11,19 @@ void MassSpectrum_Runner(TString dataset, bool debug = 0)
 	TString outSuffix = dataset;
 	TString NTupleDir = "/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer/CMSSW_10_1_9_patch1/src/L1uGMTAnalyzer/Configuration/test/";
 	
-	if( dataset == "ZeroBias2018" ) {
+	if( dataset == "ZeroBias2017" ) {
 		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_B.root");
 		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_C.root");
 		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_E.root");
 		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_F.root");
 		outSuffix += "_BCEF";
 	}
-	else if( dataset == "Charmonium2018" ) {
+	else if( dataset == "Charmonium2017" ) {
 		Input->Add(NTupleDir + "L1toRecoMatchPlots_Charm_tight_B.root");
 		Input->Add(NTupleDir + "L1toRecoMatchPlots_Charm_tight_C.root");
 		outSuffix += "_BC";
 	}
-	else if( dataset == "ZeroBias2019" ) {
+	else if( dataset == "ZeroBias2018" ) {
 		Input->Add(NTupleDir + "L1toRecoMatchPlots_tight_B.root");
 		outSuffix += "_B";
 	}
@@ -32,7 +32,7 @@ void MassSpectrum_Runner(TString dataset, bool debug = 0)
 		return;
 	}
 	
-	TFile * out = new TFile("MassSpectrum_Results/MassSpectrum_"+outSuffix+".root","recreate");
+	TFile * out = new TFile("MassSpectrum_"+outSuffix+".root","recreate");
 
 
 	//Running
