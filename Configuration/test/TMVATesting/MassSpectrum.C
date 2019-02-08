@@ -23,6 +23,50 @@ float Mll(float pt1, float eta1, float phi1, float pt2, float eta2, float phi2){
 		return (mu1+mu2).M();
 }
 
+TString MatchWithTF(float eta) {
+	if( fabs(eta) < 0.8 ) return "B";
+	else if( fabs(eta) < 1.2 ) return "O";
+	else return "E";
+}
+
+
+class TFHistos {
+	private:
+	TH1D * h_L1mllCorr_JPsi_BB, * h_L1mllCorr_JPsi_BO, * h_L1mllCorr_JPsi_BE, * h_L1mllCorr_JPsi_OO, * h_L1mllCorr_JPsi_OE, * h_L1mllCorr_JPsi_EE;
+	
+	public:
+	void CreateHistos();
+	void FillHistos(TString TF1, TString TF2, float mass);
+};
+
+void TFHistos::CreateHistos () {
+	h_L1mllCorr_JPsi_BB = new TH1D("h_L1mllCorr_JPsi_BB", "M_{ll}(L1(Corrected),J/Psi) Barrel-Barrel", 100, 0.0, 10.0);
+	h_L1mllCorr_JPsi_BO = new TH1D("h_L1mllCorr_JPsi_BO", "M_{ll}(L1(Corrected),J/Psi) Barrel-Overlap", 100, 0.0, 10.0);
+	h_L1mllCorr_JPsi_BE = new TH1D("h_L1mllCorr_JPsi_BE", "M_{ll}(L1(Corrected),J/Psi) Barrel-Endcap", 100, 0.0, 10.0);
+	h_L1mllCorr_JPsi_OO = new TH1D("h_L1mllCorr_JPsi_OO", "M_{ll}(L1(Corrected),J/Psi) Overlap-Overlap", 100, 0.0, 10.0);
+	h_L1mllCorr_JPsi_OE = new TH1D("h_L1mllCorr_JPsi_OE", "M_{ll}(L1(Corrected),J/Psi) Overlap-Endcap", 100, 0.0, 10.0);
+	h_L1mllCorr_JPsi_EE = new TH1D("h_L1mllCorr_JPsi_EE", "M_{ll}(L1(Corrected),J/Psi) Endcap-Endcap", 100, 0.0, 10.0);
+}
+
+void TFHistos::FillHistos(TString TF1, TString TF2, float mass) {
+	if( TF1.Contains("B") ) {
+		if( TF2.Contains("B") ) h_L1mllCorr_JPsi_BB->Fill(mass);
+		else if( TF2.Contains("O") ) h_L1mllCorr_JPsi_BO->Fill(mass);
+		else if( TF2.Contains("E") ) h_L1mllCorr_JPsi_BE->Fill(mass);
+	}
+	else if( TF1.Contains("O") ) {
+		if( TF2.Contains("B") ) h_L1mllCorr_JPsi_BO->Fill(mass);
+		else if( TF2.Contains("O") ) h_L1mllCorr_JPsi_OO->Fill(mass);
+		else if( TF2.Contains("E") ) h_L1mllCorr_JPsi_OE->Fill(mass);
+	}
+	else if( TF1.Contains("E") ) {
+		if( TF2.Contains("B") ) h_L1mllCorr_JPsi_BE->Fill(mass);
+		else if( TF2.Contains("O") ) h_L1mllCorr_JPsi_OE->Fill(mass);
+		else if( TF2.Contains("E") ) h_L1mllCorr_JPsi_EE->Fill(mass);
+	}
+}
+
+
 void MassSpectrum::correctThePhi(float L1muon_eta_, double & DphiL1Reco, double & PhiRecoReg) {
 	if( fabs(L1muon_eta_) < 0.8 )  {
 				DphiL1Reco = (readerBMTF->EvaluateRegression( "MLP" ))[0];
@@ -41,7 +85,7 @@ void MassSpectrum::correctThePhi(float L1muon_eta_, double & DphiL1Reco, double 
 }
 
 
-void MassSpectrum::Loop(TFile * out, bool debug)
+void MassSpectrum::Loop(TFile * out, bool SplitTFs, bool debug)
 {
 	if (fChain == 0) return;
 	
@@ -57,6 +101,10 @@ void MassSpectrum::Loop(TFile * out, bool debug)
 	TH1D * h_L1mllCorr = new TH1D("h_L1mllCorr", "M_{ll}(L1(Corrected))", 300, 0.0, 30.0);
 	TH1D * h_L1mll_JPsi = new TH1D("h_L1mll_JPsi", "M_{ll}(L1,J/Psi)", 100, 0.0, 10.0);
 	TH1D * h_L1mllCorr_JPsi = new TH1D("h_L1mllCorr_JPsi", "M_{ll}(L1(Corrected),J/Psi)", 100, 0.0, 10.0);
+	
+	TFHistos SplitTFHistos;
+	if( SplitTFs == 1 ) SplitTFHistos.CreateHistos();
+	TString TF1, TF2;
 	
 	Long64_t nbytes = 0, nb = 0;
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -75,6 +123,8 @@ void MassSpectrum::Loop(TFile * out, bool debug)
 			double DphiL1Reco_i, PhiRecoReg_i;
 			correctThePhi(L1muon_eta_, DphiL1Reco_i, PhiRecoReg_i);
 			
+			if( SplitTFs == 1 ) TF1 = MatchWithTF(L1muon_eta_);
+			
 			for(int j = i+1; j<recomuon_N; j++) {
 				L1muon_ptCorr_ = (float) L1muon_ptCorr->at(j); L1muon_eta_ = (float) L1muon_eta->at(j); L1muon_phi_ = (float) L1muon_phiAtVtx->at(j); L1muon_charge_ = (float) L1muon_charge->at(j);
 				double DphiL1Reco_j, PhiRecoReg_j;
@@ -89,9 +139,14 @@ void MassSpectrum::Loop(TFile * out, bool debug)
 				if( recomll > 3.046 && recomll < 3.146 ) {
 					h_L1mll_JPsi->Fill(L1mll);
 					h_L1mllCorr_JPsi->Fill(L1mllCorr);
+					if( SplitTFs == 1 ) {
+						TF2 = MatchWithTF(L1muon_eta_);
+						SplitTFHistos.FillHistos(TF1, TF2, L1mllCorr);
+					}
 				}
 			}
 		}
 	}
+	
 	return;
 }

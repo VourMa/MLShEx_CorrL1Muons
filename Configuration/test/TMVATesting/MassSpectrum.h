@@ -60,7 +60,7 @@ public :
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    void correctThePhi(float L1muon_eta_, double & DphiL1Reco, double & PhiRecoReg);
-   virtual void     Loop(TFile * out, bool debug);
+   virtual void     Loop(TFile * out, bool SplitTFs, bool debug);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };

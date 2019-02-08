@@ -1,8 +1,8 @@
 executable              = MassSpectrum.sh
-arguments               = Charmonium2017 #ZeroBias2017 ZeroBias2018 $(ClusterID) $(ProcId)
+arguments               = Charmonium2017 BCD 1 #ZeroBias2017 ZeroBias2018 $(ClusterID) $(ProcId)
 output                  = MassSpectrum.$(ClusterId).$(ProcId).out
 error                   = MassSpectrum.$(ClusterId).$(ProcId).err
 log                     = MassSpectrum.$(ClusterId).log
 
-+JobFlavour = "workday"
-queue
++JobFlavour = "longlunch"
+queue 20
