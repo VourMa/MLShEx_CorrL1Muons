@@ -22,7 +22,7 @@ void MassSpectrum_Runner(TString dataset, TString era, bool SplitTFs, bool debug
 		if( era.Contains("D") ) Input->Add("/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer_v2/CMSSW_10_2_11/src/L1uGMTAnalyzer/Configuration/test/skimming/L1toRecoMatchPlots_Charmonium2017_tight_D.root");
 	}
 	else if( dataset == "ZeroBias2018" ) {
-		Input->Add(NTupleDir + "/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer_v2/CMSSW_10_2_11/src/L1uGMTAnalyzer/Configuration/test/skimming/L1toRecoMatchPlots_ZeroBias2018_tight_ABC.root");
+		Input->Add("/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer_v2/CMSSW_10_2_11/src/L1uGMTAnalyzer/Configuration/test/skimming/L1toRecoMatchPlots_ZeroBias2018_tight_ABC.root");
 		era = "ABC";
 	}
 	else {

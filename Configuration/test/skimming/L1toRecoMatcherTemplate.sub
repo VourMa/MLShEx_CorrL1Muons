@@ -1,0 +1,8 @@
+executable              = L1toRecoMatcher.sh
+arguments               = DATASET ERA ID
+output                  = L1toRecoMatcher_out/L1toRecoMatcher.$(ClusterId).$(ProcId).out
+error                   = L1toRecoMatcher_err/L1toRecoMatcher.$(ClusterId).$(ProcId).err
+log                     = L1toRecoMatcher.$(ClusterId).log
+
++JobFlavour = "QUEUE"
+queue NJOBS
