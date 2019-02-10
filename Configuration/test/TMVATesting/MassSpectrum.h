@@ -28,6 +28,7 @@ public :
    vector<double>  *recomuon_eta;
    vector<double>  *recomuon_phi;
    vector<double>  *recomuon_dr;
+   vector<double>  *L1muon_pt;
    vector<double>  *L1muon_ptCorr;
    vector<double>  *L1muon_eta;
    vector<double>  *L1muon_phi;
@@ -41,6 +42,7 @@ public :
    TBranch        *b_recomuon_eta;   //!
    TBranch        *b_recomuon_phi;   //!
    TBranch        *b_recomuon_dr;   //!
+   TBranch        *b_L1muon_pt;   //!
    TBranch        *b_L1muon_ptCorr;   //!
    TBranch        *b_L1muon_eta;   //!
    TBranch        *b_L1muon_phi;   //!
@@ -142,6 +144,7 @@ void MassSpectrum::Init(TTree *tree)
    recomuon_eta = 0;
    recomuon_phi = 0;
    recomuon_dr = 0;
+   L1muon_pt = 0;
    L1muon_ptCorr = 0;
    L1muon_eta = 0;
    L1muon_phi = 0;
@@ -159,6 +162,7 @@ void MassSpectrum::Init(TTree *tree)
    fChain->SetBranchAddress("recomuon_eta", &recomuon_eta, &b_recomuon_eta);
    fChain->SetBranchAddress("recomuon_phi", &recomuon_phi, &b_recomuon_phi);
    fChain->SetBranchAddress("recomuon_dr", &recomuon_dr, &b_recomuon_dr);
+   fChain->SetBranchAddress("L1muon_pt", &L1muon_pt, &b_L1muon_pt);
    fChain->SetBranchAddress("L1muon_ptCorr", &L1muon_ptCorr, &b_L1muon_ptCorr);
    fChain->SetBranchAddress("L1muon_eta", &L1muon_eta, &b_L1muon_eta);
    fChain->SetBranchAddress("L1muon_phi", &L1muon_phi, &b_L1muon_phi);

@@ -4,6 +4,8 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
+const float JPsi_M = 3.096;
+
 double DPhi(double phi1, double phi2) {
 	double result = phi1 - phi2;
 	if(result>3.14) result -= 6.28;
@@ -32,7 +34,7 @@ TString MatchWithTF(float eta) {
 
 class TFHistos {
 	private:
-	TH1D * h_L1mllCorr_JPsi_BB, * h_L1mllCorr_JPsi_BO, * h_L1mllCorr_JPsi_BE, * h_L1mllCorr_JPsi_OO, * h_L1mllCorr_JPsi_OE, * h_L1mllCorr_JPsi_EE;
+	TH1D * h_L1mllCorr_JPsi_BB, * h_L1mllCorr_JPsi_BO, * h_L1mllCorr_JPsi_BE, * h_L1mllCorr_JPsi_OO, * h_L1mllCorr_JPsi_OE, * h_L1mllCorr_JPsi_EE, * h_L1DmllCorr_o_mllCorr_JPsi_BB, * h_L1DmllCorr_o_mllCorr_JPsi_BO, * h_L1DmllCorr_o_mllCorr_JPsi_BE, * h_L1DmllCorr_o_mllCorr_JPsi_OO, * h_L1DmllCorr_o_mllCorr_JPsi_OE, * h_L1DmllCorr_o_mllCorr_JPsi_EE;
 	
 	public:
 	void CreateHistos();
@@ -46,23 +48,30 @@ void TFHistos::CreateHistos () {
 	h_L1mllCorr_JPsi_OO = new TH1D("h_L1mllCorr_JPsi_OO", "M_{ll}(L1(Corrected),J/Psi) Overlap-Overlap", 100, 0.0, 10.0);
 	h_L1mllCorr_JPsi_OE = new TH1D("h_L1mllCorr_JPsi_OE", "M_{ll}(L1(Corrected),J/Psi) Overlap-Endcap", 100, 0.0, 10.0);
 	h_L1mllCorr_JPsi_EE = new TH1D("h_L1mllCorr_JPsi_EE", "M_{ll}(L1(Corrected),J/Psi) Endcap-Endcap", 100, 0.0, 10.0);
+	
+	h_L1DmllCorr_o_mllCorr_JPsi_BB = new TH1D("h_L1DmllCorr_o_mllCorr_JPsi_BB", "( M_{ll}(L1(Corrected),J/Psi) - M(J/#psi) ) / M(J/#psi) Barrel-Barrel", 60, -1.0, 3.0);
+	h_L1DmllCorr_o_mllCorr_JPsi_BO = new TH1D("h_L1DmllCorr_o_mllCorr_JPsi_BO", "( M_{ll}(L1(Corrected),J/Psi) - M(J/#psi) ) / M(J/#psi) Barrel-Overlap", 60, -1.0, 3.0);
+	h_L1DmllCorr_o_mllCorr_JPsi_BE = new TH1D("h_L1DmllCorr_o_mllCorr_JPsi_BE", "( M_{ll}(L1(Corrected),J/Psi) - M(J/#psi) ) / M(J/#psi) Barrel-Endcap", 60, -1.0, 3.0);
+	h_L1DmllCorr_o_mllCorr_JPsi_OO = new TH1D("h_L1DmllCorr_o_mllCorr_JPsi_OO", "( M_{ll}(L1(Corrected),J/Psi) - M(J/#psi) ) / M(J/#psi) Overlap-Overlap", 60, -1.0, 3.0);
+	h_L1DmllCorr_o_mllCorr_JPsi_OE = new TH1D("h_L1DmllCorr_o_mllCorr_JPsi_OE", "( M_{ll}(L1(Corrected),J/Psi) - M(J/#psi) ) / M(J/#psi) Overlap-Endcap", 60, -1.0, 3.0);
+	h_L1DmllCorr_o_mllCorr_JPsi_EE = new TH1D("h_L1DmllCorr_o_mllCorr_JPsi_EE", "( M_{ll}(L1(Corrected),J/Psi) - M(J/#psi) ) / M(J/#psi) Endcap-Endcap", 60, -1.0, 3.0);
 }
 
 void TFHistos::FillHistos(TString TF1, TString TF2, float mass) {
 	if( TF1.Contains("B") ) {
-		if( TF2.Contains("B") ) h_L1mllCorr_JPsi_BB->Fill(mass);
-		else if( TF2.Contains("O") ) h_L1mllCorr_JPsi_BO->Fill(mass);
-		else if( TF2.Contains("E") ) h_L1mllCorr_JPsi_BE->Fill(mass);
+		if( TF2.Contains("B") ) { h_L1mllCorr_JPsi_BB->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_BB->Fill( (mass - JPsi_M) / JPsi_M ); }
+		else if( TF2.Contains("O") ) { h_L1mllCorr_JPsi_BO->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_BO->Fill( (mass - JPsi_M) / JPsi_M ); }
+		else if( TF2.Contains("E") ) { h_L1mllCorr_JPsi_BE->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_BE->Fill( (mass - JPsi_M) / JPsi_M ); }
 	}
 	else if( TF1.Contains("O") ) {
-		if( TF2.Contains("B") ) h_L1mllCorr_JPsi_BO->Fill(mass);
-		else if( TF2.Contains("O") ) h_L1mllCorr_JPsi_OO->Fill(mass);
-		else if( TF2.Contains("E") ) h_L1mllCorr_JPsi_OE->Fill(mass);
+		if( TF2.Contains("B") ) { h_L1mllCorr_JPsi_BO->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_BO->Fill( (mass - JPsi_M) / JPsi_M ); }
+		else if( TF2.Contains("O") ) { h_L1mllCorr_JPsi_OO->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_OO->Fill( (mass - JPsi_M) / JPsi_M ); }
+		else if( TF2.Contains("E") ) { h_L1mllCorr_JPsi_OE->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_OE->Fill( (mass - JPsi_M) / JPsi_M ); }
 	}
 	else if( TF1.Contains("E") ) {
-		if( TF2.Contains("B") ) h_L1mllCorr_JPsi_BE->Fill(mass);
-		else if( TF2.Contains("O") ) h_L1mllCorr_JPsi_OE->Fill(mass);
-		else if( TF2.Contains("E") ) h_L1mllCorr_JPsi_EE->Fill(mass);
+		if( TF2.Contains("B") ) { h_L1mllCorr_JPsi_BE->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_BE->Fill( (mass - JPsi_M) / JPsi_M ); }
+		else if( TF2.Contains("O") ) { h_L1mllCorr_JPsi_OE->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_OE->Fill( (mass - JPsi_M) / JPsi_M ); }
+		else if( TF2.Contains("E") ) { h_L1mllCorr_JPsi_EE->Fill(mass); h_L1DmllCorr_o_mllCorr_JPsi_EE->Fill( (mass - JPsi_M) / JPsi_M ); }
 	}
 }
 
@@ -99,8 +108,23 @@ void MassSpectrum::Loop(TFile * out, bool SplitTFs, bool debug)
 	TH1D * h_recomll = new TH1D("h_recomll", "M_{ll}(reco)", 300, 0.0, 30.0);
 	TH1D * h_L1mll = new TH1D("h_L1mll", "M_{ll}(L1)", 300, 0.0, 30.0);
 	TH1D * h_L1mllCorr = new TH1D("h_L1mllCorr", "M_{ll}(L1(Corrected))", 300, 0.0, 30.0);
+	
 	TH1D * h_L1mll_JPsi = new TH1D("h_L1mll_JPsi", "M_{ll}(L1,J/Psi)", 100, 0.0, 10.0);
+	TH1D * h_L1Dmll_o_mll_JPsi = new TH1D("h_L1Dmll_o_mll_JPsi", "( M_{ll}(L1,J/Psi) - M(J/#psi) ) / M(J/#psi)", 60, -1.0, 3.0);
 	TH1D * h_L1mllCorr_JPsi = new TH1D("h_L1mllCorr_JPsi", "M_{ll}(L1(Corrected),J/Psi)", 100, 0.0, 10.0);
+	TH1D * h_L1Dmll_o_mllCorr_JPsi = new TH1D("h_L1Dmll_o_mllCorr_JPsi", "( M_{ll}(L1(Corrected),J/Psi) - M(J/#psi) ) / M(J/#psi)", 60, -1.0, 3.0);
+	
+	//Only pT corrected plots
+	TH1D * h_L1mllCorrOnlyPT = new TH1D("h_L1mllCorrOnlyPT", "M_{ll}(L1(Corrected only p_{T}))", 300, 0.0, 30.0);
+	TH1D * h_L1mllCorrOnlyPT_JPsi = new TH1D("h_L1mllCorrOnlyPT_JPsi", "M_{ll}(L1(Corrected only p_{T}),J/Psi)", 100, 0.0, 10.0);
+	
+	TH1D * h_L1Dmll_o_mllCorrOnlyPT_JPsi = new TH1D("h_L1Dmll_o_mllCorrOnlyPT_JPsi", "( M_{ll}(L1(Corrected only p_{T}),J/Psi) - M(J/#psi) ) / M(J/#psi)", 60, -1.0, 3.0);
+	
+	//Only phi corrected plots
+	TH1D * h_L1mllCorrOnlyPhi = new TH1D("h_L1mllCorrOnlyPhi", "M_{ll}(L1(Corrected only #phi))", 300, 0.0, 30.0);
+	TH1D * h_L1mllCorrOnlyPhi_JPsi = new TH1D("h_L1mllCorrOnlyPhi_JPsi", "M_{ll}(L1(Corrected only #phi),J/Psi)", 100, 0.0, 10.0);
+	
+	TH1D * h_L1Dmll_o_mllCorrOnlyPhi_JPsi = new TH1D("h_L1Dmll_o_mllCorrOnlyPhi_JPsi", "( M_{ll}(L1(Corrected only #phi),J/Psi) - M(J/#psi) ) / M(J/#psi)", 60, -1.0, 3.0);
 	
 	TFHistos SplitTFHistos;
 	if( SplitTFs == 1 ) SplitTFHistos.CreateHistos();
@@ -134,11 +158,21 @@ void MassSpectrum::Loop(TFile * out, bool SplitTFs, bool debug)
 				h_recomll->Fill(recomll);
 				float L1mll = Mll(L1muon_ptCorr->at(i), L1muon_eta->at(i), L1muon_phi->at(i), L1muon_ptCorr->at(j), L1muon_eta->at(j), L1muon_phi->at(j));
 				h_L1mll->Fill(L1mll);
+				float L1mllCorrOnlyPT = Mll(L1muon_ptCorr->at(i), L1muon_eta->at(i), L1muon_phiAtVtx->at(i), L1muon_ptCorr->at(j), L1muon_eta->at(j), L1muon_phiAtVtx->at(i));
+				h_L1mllCorrOnlyPT->Fill(L1mllCorrOnlyPT);
+				float L1mllCorrOnlyPhi = Mll(L1muon_pt->at(i), L1muon_eta->at(i), PhiRecoReg_i, L1muon_pt->at(j), L1muon_eta->at(j), PhiRecoReg_j);
+				h_L1mllCorrOnlyPhi->Fill(L1mllCorrOnlyPhi);
 				float L1mllCorr = Mll(L1muon_ptCorr->at(i), L1muon_eta->at(i), PhiRecoReg_i, L1muon_ptCorr->at(j), L1muon_eta->at(j), PhiRecoReg_j);
 				h_L1mllCorr->Fill(L1mllCorr);
 				if( recomll > 3.046 && recomll < 3.146 ) {
 					h_L1mll_JPsi->Fill(L1mll);
+					h_L1Dmll_o_mll_JPsi->Fill( (L1mll - JPsi_M) / JPsi_M );
+					h_L1mllCorrOnlyPT_JPsi->Fill(L1mllCorrOnlyPT);
+					h_L1Dmll_o_mllCorrOnlyPT_JPsi->Fill( (L1mllCorrOnlyPT - JPsi_M) / JPsi_M );
+					h_L1mllCorrOnlyPhi_JPsi->Fill(L1mllCorrOnlyPhi);
+					h_L1Dmll_o_mllCorrOnlyPhi_JPsi->Fill( (L1mllCorrOnlyPhi - JPsi_M) / JPsi_M );
 					h_L1mllCorr_JPsi->Fill(L1mllCorr);
+					h_L1Dmll_o_mllCorr_JPsi->Fill( (L1mllCorr - JPsi_M) / JPsi_M );
 					if( SplitTFs == 1 ) {
 						TF2 = MatchWithTF(L1muon_eta_);
 						SplitTFHistos.FillHistos(TF1, TF2, L1mllCorr);
