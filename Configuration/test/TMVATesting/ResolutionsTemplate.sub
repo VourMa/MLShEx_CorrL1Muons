@@ -1,0 +1,8 @@
+executable              = Resolutions.sh
+arguments               = DATASET ERA
+output                  = Resolutions_out/Resolutions.$(ClusterId).$(ProcId).out
+error                   = Resolutions_err/Resolutions.$(ClusterId).$(ProcId).err
+log                     = Resolutions.$(ClusterId).log
+
++JobFlavour = "QUEUE"
+queue NJOBS

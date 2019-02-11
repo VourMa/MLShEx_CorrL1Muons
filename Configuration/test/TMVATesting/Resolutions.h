@@ -5,8 +5,8 @@
 // found on file: L1uGMTPlots_tight_tree.root
 //////////////////////////////////////////////////////////
 
-#ifndef TMVARegReader_Impr_h
-#define TMVARegReader_Impr_h
+#ifndef Resolutions_h
+#define Resolutions_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -15,7 +15,7 @@
 // Header file for the classes stored in the TTree if any.
 #include "vector"
 
-class TMVARegReader_Impr {
+class Resolutions {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
@@ -47,21 +47,22 @@ public :
    TMVA::Reader* readerEMTF = new TMVA::Reader();
    float L1muon_ptCorr_, L1muon_eta_,L1muon_phi_, L1muon_charge_;
 
-   TMVARegReader_Impr(TTree *tree=0);
-   virtual ~TMVARegReader_Impr();
+   Resolutions(TTree *tree=0);
+   virtual ~Resolutions();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop(TH1D * h_DphiL1Reco,TH1D * h_PhiRecoReg,TH1D * h_DphiRegReco,TH1D * h_DphiExtReco);
+   void correctThePhi(float L1muon_eta_, double & DphiL1Reco, double & PhiRecoReg);
+   virtual void     Loop(TFile * out, bool debug);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };
 
 #endif
 
-#ifdef TMVARegReader_Impr_cxx
-TMVARegReader_Impr::TMVARegReader_Impr(TTree *tree) : fChain(0) 
+#ifdef Resolutions_cxx
+Resolutions::Resolutions(TTree *tree) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -95,19 +96,19 @@ TMVARegReader_Impr::TMVARegReader_Impr(TTree *tree) : fChain(0)
    readerEMTF->BookMVA("MLP", "/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer/CMSSW_10_1_9_patch1/src/L1uGMTAnalyzer/Configuration/test/TMVA_PhiExtrapolation_New/dataset_Impr_12_24/weights/TMVARegression_MLP.weights.xml");
 }
 
-TMVARegReader_Impr::~TMVARegReader_Impr()
+Resolutions::~Resolutions()
 {
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
 
-Int_t TMVARegReader_Impr::GetEntry(Long64_t entry)
+Int_t Resolutions::GetEntry(Long64_t entry)
 {
 // Read contents of entry.
    if (!fChain) return 0;
    return fChain->GetEntry(entry);
 }
-Long64_t TMVARegReader_Impr::LoadTree(Long64_t entry)
+Long64_t Resolutions::LoadTree(Long64_t entry)
 {
 // Set the environment to read one entry
    if (!fChain) return -5;
@@ -120,7 +121,7 @@ Long64_t TMVARegReader_Impr::LoadTree(Long64_t entry)
    return centry;
 }
 
-void TMVARegReader_Impr::Init(TTree *tree)
+void Resolutions::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -156,7 +157,7 @@ void TMVARegReader_Impr::Init(TTree *tree)
    Notify();
 }
 
-Bool_t TMVARegReader_Impr::Notify()
+Bool_t Resolutions::Notify()
 {
    // The Notify() function is called when a new file is opened. This
    // can be either for a new TTree in a TChain or when when a new TTree
@@ -167,18 +168,18 @@ Bool_t TMVARegReader_Impr::Notify()
    return kTRUE;
 }
 
-void TMVARegReader_Impr::Show(Long64_t entry)
+void Resolutions::Show(Long64_t entry)
 {
 // Print contents of entry.
 // If entry is not specified, print current entry
    if (!fChain) return;
    fChain->Show(entry);
 }
-Int_t TMVARegReader_Impr::Cut(Long64_t entry)
+Int_t Resolutions::Cut(Long64_t entry)
 {
 // This function may be called from Loop.
 // returns  1 if entry is accepted.
 // returns -1 otherwise.
    return 1;
 }
-#endif // #ifdef TMVARegReader_Impr_cxx
+#endif // #ifdef Resolutions_cxx
