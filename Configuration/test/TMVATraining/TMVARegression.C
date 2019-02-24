@@ -38,7 +38,7 @@ void TFCut(TCut &mycut, TString TF) {
 
 void GuysCut(TCut &mycut, TString guys) {
 	if(guys == "G") mycut += " ( L1muon_pt >= 10 && L1muon_pt <= 40 ) ";
-	else if(guys == "B") mycut += " ( L1muon_tfMuonIndex <= 10 || L1muon_tfMuonIndex >= 40 ) ";
+	else if(guys == "B") mycut += " ( L1muon_pt <= 10 || L1muon_pt >= 40 ) ";
 	else cout << "Neither G(ood) nor B(ad) guys selected ==> Inclusive training." << endl;
 	
 	return;
@@ -130,7 +130,10 @@ void TMVARegression( TString TF, TString fileEras, TString guys )
 	cout << mycut << endl;
 	
 	
-	dataloader->PrepareTrainingAndTestTree( mycut,"SplitMode=Random:NormMode=NumEvents:!V" ); //nTrain_Regression=1000:nTest_Regression=1000:
+	TString preparationString;
+	if(TF == "E") preparationString = "nTrain_Regression=250000:nTest_Regression=250000:SplitMode=Random:NormMode=NumEvents:!V";
+	else preparationString = "SplitMode=Random:NormMode=NumEvents:!V";
+	dataloader->PrepareTrainingAndTestTree( mycut, preparationString );
 	
 	
 	factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+20:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15" );

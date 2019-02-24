@@ -80,7 +80,7 @@ void Resolutions::correctThePhi(float L1muon_eta_, double & DphiL1Reco, double &
 			}
 }
 
-void Resolutions::Loop(TFile * out, bool debug)
+void Resolutions::Loop(TFile * out, TString performOnWhichGuys, bool debug)
 {
 	if (fChain == 0) return;
 	
@@ -115,6 +115,8 @@ void Resolutions::Loop(TFile * out, bool debug)
 		for(int i = 0; i<L1muon_ptCorr->size(); i++) {
 			//Cuts
 			if(recomuon_dr->at(i) < 0.0 || recomuon_dr->at(i) > 0.2) continue;
+			if(performOnWhichGuys == "G") if(L1muon_pt->at(i) < 10 || L1muon_ptCorr->at(i) > 40) continue;
+			if(performOnWhichGuys == "B") if(L1muon_pt->at(i) > 10 && L1muon_ptCorr->at(i) < 40) continue;
 			
 			L1muon_ptCorr_ = (float) L1muon_ptCorr->at(i); L1muon_eta_ = (float) L1muon_eta->at(i); L1muon_phi_ = (float) L1muon_phiAtVtx->at(i); L1muon_charge_ = (float) L1muon_charge->at(i);
 			

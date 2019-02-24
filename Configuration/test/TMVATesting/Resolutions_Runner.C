@@ -4,8 +4,11 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
-void Resolutions_Runner(TString dataset, TString era, bool debug = 0)
+void Resolutions_Runner(TString dataset, TString era, TString performOnWhichGuys = "A", bool debug = 0)
 {
+	TString etaOrIndex = "index"; //eta
+	TString whichGuys = "B"; //A(ll), G(ood), B(ad)
+	
 	//___ Input - Output ___//
 	TChain *Input = new TChain("mytree");
 	TString NTupleDir = "/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer/CMSSW_10_1_9_patch1/src/L1uGMTAnalyzer/Configuration/test/";
@@ -35,12 +38,12 @@ void Resolutions_Runner(TString dataset, TString era, bool debug = 0)
 		return;
 	}
 	
-	TString outSuffix = dataset + "_" + era;
+	TString outSuffix = dataset + "_" + era + "_" + etaOrIndex + "_" + whichGuys + "_" + performOnWhichGuys;
 	TFile * out = new TFile("Resolutions_"+outSuffix+".root","recreate");
 	
 	//Running
-	Resolutions Read(Input);
-	Read.Loop(out, debug);
+	Resolutions Read(Input,etaOrIndex,whichGuys);
+	Read.Loop(out, performOnWhichGuys, debug);
 	
 	out->Write();
 	out->Close();

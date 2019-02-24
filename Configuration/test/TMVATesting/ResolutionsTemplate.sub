@@ -1,5 +1,5 @@
 executable              = Resolutions.sh
-arguments               = DATASET ERA
+arguments               = DATASET ERA PERFORMONWHICHGUYS
 output                  = Resolutions_out/Resolutions.$(ClusterId).$(ProcId).out
 error                   = Resolutions_err/Resolutions.$(ClusterId).$(ProcId).err
 log                     = Resolutions.$(ClusterId).log

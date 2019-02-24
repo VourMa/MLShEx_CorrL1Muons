@@ -1,5 +1,5 @@
 #!/bin/bash
-condorFile=ResolutionsCondor_$1_$2_$3_$4.sub
+condorFile=ResolutionsCondor_$1_$2_$3_$4_$5.sub
 cp ResolutionsTemplate.sub $condorFile
 
 if [ ! -f "CondorLog.txt" ]; then
@@ -13,6 +13,7 @@ echo "$condorFile created!"
 
 sed -i "s|DATASET|$1|" $condorFile; shift
 sed -i "s|ERA|$1|" $condorFile; shift
+sed -i "s|PERFORMONWHICHGUYS|$1|" $condorFile; shift
 
 sed -i "s|QUEUE|$1|" $condorFile; shift
 sed -i "s|NJOBS|$1|" $condorFile; shift
