@@ -33,7 +33,6 @@ float Mll(float pt1, float eta1, float phi1, float pt2, float eta2, float phi2){
 
 
 TH1D* GetHisto(TChain *chain, TString histo, TString histo_name, TString cuts, int nbins=0, float lowedge=0.0, float highedge=0.0) {
-	//TH1D *h_temp;
 	TString nbins_str = std::to_string(nbins);
 	TString lowedge_str = std::to_string(lowedge);
 	TString highedge_str = std::to_string(highedge);
@@ -75,13 +74,13 @@ void CustomPlot(TH1D *histo, TString name, EColor color, TString xtitle) {
 }
 
 void DrawTogether(TH1D *histo, TString name, bool setlogy, TLegend *leg) {
-	TCanvas *canvas = new TCanvas("canvas","",800,600);
-	//TImage *img = TImage::Create();
+	TCanvas *canvas = new TCanvas("canvas_"+name,"",800,600);
 	
 	histo->DrawNormalized();
 	
 	if(setlogy) canvas->SetLogy();
 	
+	//No legends in this implementation of the plotter but the snippets below hint at the implementation, if need be
 	if(leg != nullptr) {
 		leg->AddEntry(histo,"NeutrinoGun@PU200","l");
 		leg->Draw();
@@ -89,11 +88,13 @@ void DrawTogether(TH1D *histo, TString name, bool setlogy, TLegend *leg) {
 	
 	canvas->Write(name);
 	
-	//img->FromPad(canvas);
-	//img->WriteImage(name+".png");
+	//Uncomment below to create .png files directly
+//	TImage *img = TImage::Create();
+//	img->FromPad(canvas);
+//	img->WriteImage(name+".png");
+//	delete img; //FIXME Verify that it works, never tested!
 	
 	if(leg != nullptr) leg->Clear();
-	//img->Clear();
 }
 
 void GetVariablePlots(TChain *Input, TString name, TString histo_name, TString xtitle, TString cuts, bool setlogy, TLegend *leg, int nbins=0, float lowedge=0.0, float highedge=0.0) {
@@ -103,6 +104,8 @@ void GetVariablePlots(TChain *Input, TString name, TString histo_name, TString x
 	CustomPlot(h_signal_temp_PU0,histo_name,kBlue,xtitle);
 	
 	DrawTogether(h_signal_temp_PU0,histo_name,setlogy,leg);
+	
+	cout << "Canvas " << histo_name << " created!" << endl;
 }
 
 void GetVariablePlots(TChain *Input, TString name, TString histo_name, TString xtitle, TString cuts, bool setlogy, TLegend *leg, int nbins,float bins[]) {
@@ -111,6 +114,8 @@ void GetVariablePlots(TChain *Input, TString name, TString histo_name, TString x
 	CustomPlot(h_signal_temp_PU0,histo_name,kBlue,xtitle);
 	
 	DrawTogether(h_signal_temp_PU0,histo_name,setlogy,leg);
+	
+	cout << "Canvas " << histo_name << " created!" << endl;
 }
 
 
@@ -141,10 +146,12 @@ void GetVariablePlots2D(TChain *Input, TString name, TString histo_name, int nbi
 	h_signal_temp_PU0 = GetHisto2D(Input,name,histo_name,cuts,nbinsx,binsx,nbinsy,lowy,highy);
 	CustomPlot2D(h_signal_temp_PU0,histo_name,xtitle,ytitle);
 	
-	TCanvas *canvas = new TCanvas("canvas","",800,600);
+	TCanvas *canvas = new TCanvas("canvas_"+histo_name,"",800,600);
 	h_signal_temp_PU0->Draw("COLZ");
 	
 	canvas->Write(histo_name);
+	
+	cout << "Canvas " << histo_name << " created!" << endl;
 }
 
 void PlotEfficiency(TH1D * num,TH1D * den,TString name,TString xtitle,double low,double high) {
@@ -160,37 +167,34 @@ void PlotEfficiency(TH1D * num,TH1D * den,TString name,TString xtitle,double low
 	eff->GetYaxis()->SetRangeUser(0.0,1.1);
 	eff->Write(name+"_eff");
 	
+	cout << "Canvas " << name << "_eff created!" << endl;
+	
 	return;
 }
 
 
 
 //----------------------------Main----------------------------
-void Tree_Plotter(TString ID = "tight")
+void Plotter(TString fileName)
 {
 	
 TChain *Input = new TChain("mytree");
-//Input->Add("L1uGMTPlots_"+ID+"_tree.root");
-//Input->Add("L1uGMTPlots_"+ID+"_tree_test.root"); //For testing
-//Input->Add("L1uGMTPlots_"+ID+"_tree_2018_test.root");
-Input->Add("L1toRecoMatchPlots_"+ID+"_test.root");
+Input->Add(fileName+".root");
 
 
 TLegend * leg = nullptr; //TLegend *leg = new TLegend(0.6,0.75,0.9,0.9);
-//TFile * HistoFile  = new TFile("plots_"+ID+"_tree_2018_test.root","recreate");
-TFile * HistoFile  = new TFile("plots_"+ID+"_test_profile.root","recreate");
-//TString cuts = "recomuon_dr > 0.0 && recomuon_dr < 0.4 && L1muon_hwQual > 10";
+TFile * HistoFile  = new TFile(fileName+"_profilePlots.root","recreate");
 TString cuts = "recomuon_dr > 0.0 && recomuon_dr < 0.2";
 
 
-cout<<"ID \""+ID+"\": "<<Input->GetEntries()<<" events"<<endl;
+cout<<"File \""+fileName+"\": "<<Input->GetEntries()<<" events"<<endl;
 gStyle->SetOptStat(0);
 
 const int pt_size = 21;
 float pt_bins[pt_size] = {1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,6.0,7.0,8.0,9.0,10.0,12.0,14.0,16.0,18.0,20.0,30.0,50.0};
 
-GetVariablePlots(Input,"recomuon_dr","recomuon_dr","#DeltaR(L1,reco)","",false,leg,100, 0.0, 5.0);
-GetVariablePlots(Input,"L1muon_hwQual","L1muon_hwQual","L1 Quality",cuts,false,leg,15, 0.0, 15.0);
+//GetVariablePlots(Input,"recomuon_dr","recomuon_dr","#DeltaR(L1,reco)","",false,leg,100, 0.0, 5.0);
+//GetVariablePlots(Input,"L1muon_hwQual","L1muon_hwQual","L1 Quality",cuts,false,leg,15, 0.0, 15.0);
 
 GetVariablePlots(Input,"recomuon_pt","recomuon_pt_den","p_{T}(reco) [GeV]","",false,leg,pt_size-1,pt_bins);
 TH1D * recomuon_pt_den = (TH1D*)gDirectory->Get("recomuon_pt_den");
@@ -198,30 +202,32 @@ GetVariablePlots(Input,"recomuon_pt","recomuon_pt_num","p_{T}(reco) [GeV]",cuts,
 TH1D * recomuon_pt_num = (TH1D*)gDirectory->Get("recomuon_pt_num");
 PlotEfficiency(recomuon_pt_num,recomuon_pt_den,"recomuon_pt","p_{T}(reco)",0.0,50.0);
 
-//GetVariablePlots(Input,"L1muon_pt","L1muon_pt_den","p_{T}(L1) [GeV]","",false,leg,pt_size-1,pt_bins);
-//GetVariablePlots(Input,"L1muon_pt","L1muon_pt_num","p_{T}(L1) [GeV]",cuts,false,leg,pt_size-1,pt_bins);
+GetVariablePlots(Input,"L1muon_pt","L1muon_pt_den","p_{T}(L1) [GeV]","",false,leg,pt_size-1,pt_bins);
+GetVariablePlots(Input,"L1muon_pt","L1muon_pt_num","p_{T}(L1) [GeV]",cuts,false,leg,pt_size-1,pt_bins);
 //GetVariablePlots(Input,"(L1muon_pt - recomuon_pt) / recomuon_pt","pt_res","(p_{T}(L1) - p_{T}(reco)) / p_{T}(reco)",cuts,false,leg,600,-1.0,5.0);
-GetVariablePlots(Input,"L1muon_pt / recomuon_pt","pt_rat","p_{T}(L1) / p_{T}(reco)",cuts,false,leg,500,0.0,5.0);
+//GetVariablePlots(Input,"L1muon_pt / recomuon_pt","pt_rat","p_{T}(L1) / p_{T}(reco)",cuts,false,leg,500,0.0,5.0);
+//GetVariablePlots(Input,"(L1muon_ptCorr - recomuon_pt) / recomuon_pt","pt_res","(p_{T}(L1) - p_{T}(reco)) / p_{T}(reco)",cuts,false,leg,600,-1.0,5.0);
+//GetVariablePlots(Input,"L1muon_ptCorr / recomuon_pt","pt_rat","p_{T}(L1) / p_{T}(reco)",cuts,false,leg,500,0.0,5.0);
 
-GetVariablePlots(Input,"recomuon_eta","recomuon_eta_den","#eta(reco)","",false,leg,50,-2.5,2.5);
-TH1D * recomuon_eta_den = (TH1D*)gDirectory->Get("recomuon_eta_den");
-GetVariablePlots(Input,"recomuon_eta","recomuon_eta_num","#eta(reco)",cuts,false,leg,50,-2.5,2.5);
-TH1D * recomuon_eta_num = (TH1D*)gDirectory->Get("recomuon_eta_num");
-PlotEfficiency(recomuon_eta_num,recomuon_eta_den,"recomuon_eta","#eta(reco)",-2.5,2.5);
+//GetVariablePlots(Input,"recomuon_eta","recomuon_eta_den","#eta(reco)","",false,leg,50,-2.5,2.5);
+//TH1D * recomuon_eta_den = (TH1D*)gDirectory->Get("recomuon_eta_den");
+//GetVariablePlots(Input,"recomuon_eta","recomuon_eta_num","#eta(reco)",cuts,false,leg,50,-2.5,2.5);
+//TH1D * recomuon_eta_num = (TH1D*)gDirectory->Get("recomuon_eta_num");
+//PlotEfficiency(recomuon_eta_num,recomuon_eta_den,"recomuon_eta","#eta(reco)",-2.5,2.5);
 
 
-GetVariablePlots(Input,"L1muon_etaAtVtx - recomuon_eta","eta_dif","#eta(L1) - #eta(reco)",cuts,false,leg,80,-0.4,0.4);
+//GetVariablePlots(Input,"L1muon_etaAtVtx - recomuon_eta","eta_dif","#eta(L1) - #eta(reco)",cuts,false,leg,80,-0.4,0.4);
 /*GetVariablePlots(Input,"(L1muon_etaAtVtx - recomuon_eta) / recomuon_eta","eta_res","(#eta(L1) - #eta(reco)) / #eta(reco)",cuts,false,leg,200,-1.0,1.0);
 GetVariablePlots(Input,"L1muon_etaAtVtx / recomuon_eta","eta_rat","#eta(L1) / #eta(reco)",cuts,false,leg,200,0.0,2.0);*/
 
-GetVariablePlots(Input,"recomuon_phi","recomuon_phi_den","#phi(reco)","",false,leg,64,-3.2,3.2);
-TH1D * recomuon_phi_den = (TH1D*)gDirectory->Get("recomuon_phi_den");
-GetVariablePlots(Input,"recomuon_phi","recomuon_phi_num","#phi(reco)",cuts,false,leg,64,-3.2,3.2);
-TH1D * recomuon_phi_num = (TH1D*)gDirectory->Get("recomuon_phi_num");
-PlotEfficiency(recomuon_phi_num,recomuon_phi_den,"recomuon_phi","#phi(reco)",-3.2,3.2);
+//GetVariablePlots(Input,"recomuon_phi","recomuon_phi_den","#phi(reco)","",false,leg,64,-3.2,3.2);
+//TH1D * recomuon_phi_den = (TH1D*)gDirectory->Get("recomuon_phi_den");
+//GetVariablePlots(Input,"recomuon_phi","recomuon_phi_num","#phi(reco)",cuts,false,leg,64,-3.2,3.2);
+//TH1D * recomuon_phi_num = (TH1D*)gDirectory->Get("recomuon_phi_num");
+//PlotEfficiency(recomuon_phi_num,recomuon_phi_den,"recomuon_phi","#phi(reco)",-3.2,3.2);
 
 
-GetVariablePlots(Input,"DPhi(L1muon_phiAtVtx,recomuon_phi)","phi_dif","#phi(L1) - #phi(reco)",cuts,false,leg,80,-0.4,0.4);
+//GetVariablePlots(Input,"DPhi(L1muon_phiAtVtx,recomuon_phi)","phi_dif","#phi(L1) - #phi(reco)",cuts,false,leg,80,-0.4,0.4);
 /*GetVariablePlots(Input,"DPhi(L1muon_phiAtVtx,recomuon_phi) / recomuon_phi","phi_res","(#phi(L1) - #phi(reco)) / #phi(reco)",cuts,false,leg,600,-3.0,3.0);
 GetVariablePlots(Input,"L1muon_phiAtVtx / recomuon_phi","phi_rat","#phi(L1) / #phi(reco)",cuts,false,leg,600,0.0,6.0);*/
 
@@ -256,6 +262,10 @@ GetVariablePlots2D(Input, "(L1muon_pt / recomuon_pt):L1muon_pt","pt_rat_vs_L1muo
 TH2D * pt_rat_vs_L1muon_pt_EMTF = (TH2D*)gDirectory->Get("pt_rat_vs_L1muon_pt_EMTF");
 pt_rat_vs_L1muon_pt_EMTF->ProfileX();
 
+const int L1pt_size = 51;
+double L1pt_bins[L1pt_size] = {0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0,17.0,18.0,19.0,20.0,21.0,22.0,23.0,24.0,25.0,26.0,27.0,28.0,29.0,30.0,31.0,32.0,33.0,34.0,35.0,36.0,37.0,38.0,39.0,40.0,41.0,42.0,43.0,44.0,45.0,46.0,47.0,48.0,49.0,50.0};
+GetVariablePlots2D(Input, "recomuon_pt:L1muon_pt","recomuon_pt_vs_L1muon_pt_fixedBinning",L1pt_size-1,L1pt_bins,50,0.0,50.0,"p_{T}(L1) [GeV]","p_{T}(reco) [GeV]",cuts);
+GetVariablePlots2D(Input, "(L1muon_pt / recomuon_pt):L1muon_pt","pt_rat_vs_L1muon_pt_fixedBinning",L1pt_size-1,L1pt_bins,50,0.0,5.0,"p_{T}(L1) [GeV]","p_{T}(L1) / p_{T}(reco)",cuts);
 
 //pT bump study
 //GetVariablePlots(Input,"recomuon_dr","recomuon_dr_ratio","#DeltaR(L1,reco)",cuts+" && L1muon_pt / recomuon_pt < 0.6 && L1muon_pt / recomuon_pt > 0.4",false,leg,100, 0.0, 5.0);

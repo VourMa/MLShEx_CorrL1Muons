@@ -56,17 +56,17 @@ void getProf(TFile & infile, TString histoname_1, TProfile & prof_1, TString his
 
 
 
-void L1toRecoMatcher::Loop(TString ID,TFile * out)
+void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 {
 	if (fChain == 0) return;
 	
 	Long64_t nentries = fChain->GetEntriesFast();
 	//cout << "Total number of events: " << nentries << endl;
-//	nentries = 1000000;
+	if( debug == 1 ) nentries = 100000;
 
 
 	//___Get the profile histograms___
-	TFile profFile("plots_tight_test_profile.root","read");
+	TFile profFile("/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/plots_tight_test_profile.root","read");
 	TProfile AllTF, BMTF, OMTF, EMTF;
 	getProf(profFile, "pt_rat_vs_L1muon_pt_pfx", AllTF, "pt_rat_vs_L1muon_pt_BMTF_pfx", BMTF, "pt_rat_vs_L1muon_pt_OMTF_pfx", OMTF, "pt_rat_vs_L1muon_pt_EMTF_pfx", EMTF);
 	profFile.Close();
@@ -108,6 +108,8 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out)
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
 		nb = fChain->GetEntry(jentry);   nbytes += nb;
+
+		if( ientry % 1000000 == 0 ) cout << "I have processed " << ientry << " events!" << endl;
 
 
 		int nReco = 0;
