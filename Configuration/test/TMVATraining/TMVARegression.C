@@ -17,7 +17,7 @@
 #include "TMVA/TMVARegGui.h"
 
 
-TString NTupleDir = "/afs/cern.ch/work/e/evourlio/private/L1uGMTAnalyzer/CMSSW_10_1_9_patch1/src/L1uGMTAnalyzer/Configuration/test/";
+TString NTupleDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/";
 
 
 float deltaPhi(float phi1, float phi2) {
@@ -27,18 +27,29 @@ float deltaPhi(float phi1, float phi2) {
 	return result;
 }
 
-void TFCut(TCut &mycut, TString TF) {
-	if(TF == "B") mycut += " (L1muon_tfMuonIndex >= 36 && L1muon_tfMuonIndex <= 70) ";
-	else if(TF == "O") mycut += " ( (L1muon_tfMuonIndex >= 17 && L1muon_tfMuonIndex <= 35) || (L1muon_tfMuonIndex >= 71 && L1muon_tfMuonIndex <= 89) ) ";
-	else if(TF == "E") mycut += " ( (L1muon_tfMuonIndex >= 0 && L1muon_tfMuonIndex <= 16) || (L1muon_tfMuonIndex >= 90 && L1muon_tfMuonIndex <= 107) ) ";
-	else { cout << "Invalid TF, exiting." << endl; exit(1); }
+void TFCut(TCut &mycut, TString TF, TString etaOrIndex = "Eta") {
+	if( etaOrIndex == "Index" ) {
+		if(TF == "B") mycut += " L1muon_tfMuonIndex >= 36 && L1muon_tfMuonIndex <= 70 ";
+		else if(TF == "O") mycut += " (L1muon_tfMuonIndex >= 17 && L1muon_tfMuonIndex <= 35) || (L1muon_tfMuonIndex >= 71 && L1muon_tfMuonIndex <= 89) ";
+		else if(TF == "E") mycut += " (L1muon_tfMuonIndex >= 0 && L1muon_tfMuonIndex <= 16) || (L1muon_tfMuonIndex >= 90 && L1muon_tfMuonIndex <= 107) ";
+		else { cout << "Invalid TF, exiting." << endl; exit(1); }
+	}
+	else if( etaOrIndex == "Eta" ) {
+		if(TF == "B") mycut += " fabs(L1muon_eta) < 0.8 ";
+		else if(TF == "O") mycut += " fabs(L1muon_eta) >= 0.8 && fabs(L1muon_eta) < 1.2 ";
+		else if(TF == "E") mycut += " fabs(L1muon_eta) >= 1.2 ";
+		else { cout << "Invalid TF, exiting." << endl; exit(1); }
+	}
+	else { cout << "Invalid TF binning, neither \"Eta\" nor \"Index\". Exiting..." << endl; exit(1); }
 	
 	return;
 }
 
 void GuysCut(TCut &mycut, TString guys) {
-	if(guys == "G") mycut += " ( L1muon_pt >= 10 && L1muon_pt <= 40 ) ";
-	else if(guys == "B") mycut += " ( L1muon_pt <= 10 || L1muon_pt >= 40 ) ";
+	if(guys == "G") mycut += " L1muon_pt >= 10 && L1muon_pt <= 40 ";
+	else if(guys == "B") mycut += " L1muon_pt <= 10 || L1muon_pt >= 40 ";
+	else if(guys == "L") mycut += " L1muon_pt <= 10 ";
+	else if(guys == "H") mycut += " L1muon_pt >= 40 ";
 	else cout << "Neither G(ood) nor B(ad) guys selected ==> Inclusive training." << endl;
 	
 	return;
@@ -70,7 +81,7 @@ void LoadFiles::FilesInReg(TString fileEras, TMVA::DataLoader * dataloader) {
 
 TFile * LoadFiles::InitializeFile(TString era) {
 	TFile *input(0);
-	TString fname = NTupleDir+"L1toRecoMatchPlots_tight_"+era+".root";
+	TString fname = NTupleDir+"L1toRecoMatchPlots_ZeroBias2017_tight_"+era+".root";
 	if (!gSystem->AccessPathName( fname )) {
 		input = TFile::Open( fname );
 		//cout << "--- TMVARegression           : Using input file: " << input->GetName() << endl;
@@ -95,16 +106,18 @@ void LoadFiles::DataLoadFiles(vector<TFile *> Files, TMVA::DataLoader * dataload
 
 using namespace TMVA;
 
-void TMVARegression( TString TF, TString fileEras, TString guys )
+void TMVARegression( TString TF, TString fileEras, TString guys, TString extraText = "")
 {
-	TMVA::Tools::Instance();
+	TString etaOrIndex = "Eta"; // or "Index"
+	
+	Tools::Instance();
 	
 	
 	cout << endl;
 	cout << "==> Start TMVARegression" << endl;
 	
 	
-	TString outfileName( "TMVARegression_TF"+TF+"_Era"+fileEras+"_Guys"+guys );
+	TString outfileName( "TMVARegression_TF"+TF+"_Era"+fileEras+"_Guys"+guys+"_"+etaOrIndex+extraText );
 	TFile* outputFile = TFile::Open( outfileName+".root", "RECREATE" );
 	
 	TMVA::Factory *factory = new TMVA::Factory( "TMVARegression", outputFile,"!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression" );
@@ -113,7 +126,6 @@ void TMVARegression( TString TF, TString fileEras, TString guys )
 	TMVA::DataLoader *dataloader=new TMVA::DataLoader(outfileName);
 	
 	dataloader->AddVariable( "L1muon_ptCorr", "p_{T,corrected}(L1 #mu)", "GeV", 'F' );
-	dataloader->AddSpectator( "L1muon_pt", "p_{T}(L1 #mu)", "GeV", 'F' );
 	dataloader->AddVariable( "L1muon_eta", "#eta(L1 #mu)", "", 'F' );
 	dataloader->AddVariable( "L1muon_phiAtVtx", "#phiAtVtx(L1 #mu)", "", 'F' );
 	dataloader->AddVariable( "L1muon_charge", "charge(L1 #mu)", "", 'I' );
@@ -125,13 +137,14 @@ void TMVARegression( TString TF, TString fileEras, TString guys )
 	
 	
 	TCut mycut = " recomuon_dr >= 0.0 && recomuon_dr < 0.2 ";
-	TFCut(mycut, TF);
+	TFCut(mycut, TF, etaOrIndex);
 	GuysCut(mycut, guys);
 	cout << mycut << endl;
 	
 	
 	TString preparationString;
 	if(TF == "E") preparationString = "nTrain_Regression=250000:nTest_Regression=250000:SplitMode=Random:NormMode=NumEvents:!V";
+	else if(TF == "E" && guys == "G") preparationString = "nTrain_Regression=50000:nTest_Regression=50000:SplitMode=Random:NormMode=NumEvents:!V";
 	else preparationString = "SplitMode=Random:NormMode=NumEvents:!V";
 	dataloader->PrepareTrainingAndTestTree( mycut, preparationString );
 	
@@ -146,7 +159,7 @@ void TMVARegression( TString TF, TString fileEras, TString guys )
 	
 	outputFile->Close();
 	
-	cout << "==> Wrote root file: " << outputFile->GetName() << ".root" << endl;
+	cout << "==> Wrote root file: " << outputFile->GetName() << endl;
 	cout << "==> TMVARegression is done!" << endl;
 	
 	delete factory;
