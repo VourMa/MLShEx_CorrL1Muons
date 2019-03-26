@@ -1,0 +1,8 @@
+executable              = ScoutedData.sh
+arguments               = EXTRATEXT
+output                  = ScoutedData_out/ScoutedData.$(ClusterId).$(ProcId).out
+error                   = ScoutedData_err/ScoutedData.$(ClusterId).$(ProcId).err
+log                     = ScoutedData.$(ClusterId).log
+
++JobFlavour = "QUEUE"
+queue NJOBS
