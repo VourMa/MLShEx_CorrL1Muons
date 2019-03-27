@@ -1,5 +1,5 @@
 executable              = MassSpectrum.sh
-arguments               = DATASET ERA TFSPLIT
+arguments               = DATASET ERA PARTICLE WHICHGUYS
 output                  = MassSpectrum_out/MassSpectrum.$(ClusterId).$(ProcId).out
 error                   = MassSpectrum_err/MassSpectrum.$(ClusterId).$(ProcId).err
 log                     = MassSpectrum.$(ClusterId).log

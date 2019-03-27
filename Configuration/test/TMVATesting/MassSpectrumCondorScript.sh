@@ -1,5 +1,5 @@
 #!/bin/bash
-condorFile=MassSpectrumCondor_$1_$2_$3_$4_$5.sub
+condorFile=MassSpectrumCondor_$1_$2_$3_$4_$5_$6.sub
 cp MassSpectrumTemplate.sub $condorFile
 
 if [ ! -f "CondorLog.txt" ]; then
@@ -13,7 +13,8 @@ echo "$condorFile created!"
 
 sed -i "s|DATASET|$1|" $condorFile; shift
 sed -i "s|ERA|$1|" $condorFile; shift
-sed -i "s|TFSPLIT|$1|" $condorFile; shift
+sed -i "s|PARTICLE|$1|" $condorFile; shift
+sed -i "s|WHICHGUYS|$1|" $condorFile; shift
 
 sed -i "s|QUEUE|$1|" $condorFile; shift
 sed -i "s|NJOBS|$1|" $condorFile; shift
