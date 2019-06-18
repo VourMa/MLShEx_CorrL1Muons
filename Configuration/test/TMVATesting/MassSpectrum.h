@@ -5,12 +5,17 @@
 // found on file: L1uGMTPlots_tight_tree.root
 //////////////////////////////////////////////////////////
 
-#ifndef MassSpectrum_h
-#define MassSpectrum_h
+//#ifndef MassSpectrum_h
+//#define MassSpectrum_h
 
+#include <unordered_map>
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/TMVAGui.h"
+#include "TMVA/Reader.h"
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -70,9 +75,9 @@ public :
    virtual void     Show(Long64_t entry = -1);
 };
 
-#endif
+//#endif
 
-#ifdef MassSpectrum_cxx
+//#ifdef MassSpectrum_cxx
 MassSpectrum::MassSpectrum(TTree *tree, TString etaOrIndex) : fChain(0)
 {
    Init(tree);
@@ -170,4 +175,4 @@ Int_t MassSpectrum::Cut(Long64_t entry)
 {
    return 1;
 }
-#endif // #ifdef MassSpectrum_cxx
+//#endif // #ifdef MassSpectrum_cxx

@@ -1,8 +1,17 @@
-#define Resolutions_cxx
+//#define Resolutions_cxx
 #include "Resolutions.h"
+#include <unordered_map>
+#include <iostream>
+#include <string>
+#include <string>
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TMath.h>
+#include <TLorentzVector.h>
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/TMVAGui.h"
 
 
 double DPhi(double phi1, double phi2) {

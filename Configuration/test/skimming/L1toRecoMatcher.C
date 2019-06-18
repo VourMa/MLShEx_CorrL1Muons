@@ -1,6 +1,9 @@
-#define L1toRecoMatcher_cxx
+//#define L1toRecoMatcher_cxx
+#include <iostream>
 #include "L1toRecoMatcher.h"
 #include "TLorentzVector.h"
+#include "TProfile.h"
+#include "TFile.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -62,7 +65,7 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 	
 	Long64_t nentries = fChain->GetEntriesFast();
 	//cout << "Total number of events: " << nentries << endl;
-	if( debug == 1 ) nentries = 100000;
+	if( debug == 1 ) nentries = 1000;
 
 
 	//___Get the profile histograms___
@@ -117,7 +120,7 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 		recomuon.Clear(); L1muon.Clear();
 
 
-		for(int i = 0; i < recomuon_pt->size(); i++) {
+		for(unsigned int i = 0; i < recomuon_pt->size(); i++) {
 			if(ID == "tight") if(recomuon_isTightMuon->at(i) == 0) continue;
 			if(ID == "medium") if(recomuon_isMediumMuon->at(i) == 0) continue;
 			if(ID == "loose") if(recomuon_isLooseMuon->at(i) == 0) continue;
@@ -128,7 +131,7 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 			nReco++;
 			
 			bool NotMatchedAtSt = false;
-			for(int j = 0; j < muon_pt->size(); j++) {
+			for(unsigned int j = 0; j < muon_pt->size(); j++) {
 				float dr = -9999;
 				if (recomuon_phiAtSt2->at(i) != -9999) dr = DR( recomuon_eta->at(i),recomuon_phiAtSt2->at(i),muon_eta->at(j),muon_phi->at(j) );
 				else if (recomuon_phiAtSt1->at(i) != -9999) dr = DR( recomuon_eta->at(i),recomuon_phiAtSt1->at(i),muon_eta->at(j),muon_phi->at(j) );

@@ -5,12 +5,17 @@
 // found on file: L1uGMTPlots_tight_tree.root
 //////////////////////////////////////////////////////////
 
-#ifndef Resolutions_h
-#define Resolutions_h
+//#ifndef Resolutions_h
+//#define Resolutions_h
 
+#include <unordered_map>
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/TMVAGui.h"
+#include "TMVA/Reader.h"
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -62,9 +67,9 @@ public :
    virtual void     Show(Long64_t entry = -1);
 };
 
-#endif
+//#endif
 
-#ifdef Resolutions_cxx
+//#ifdef Resolutions_cxx
 Resolutions::Resolutions(TTree *tree, TString etaOrIndex) : fChain(0) 
 {
    Init(tree);
@@ -155,4 +160,4 @@ Int_t Resolutions::Cut(Long64_t entry)
 {
    return 1;
 }
-#endif // #ifdef Resolutions_cxx
+//#endif // #ifdef Resolutions_cxx

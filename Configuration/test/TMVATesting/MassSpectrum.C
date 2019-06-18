@@ -1,8 +1,15 @@
-#define MassSpectrum_cxx
+//#define MassSpectrum_cxx
 #include "MassSpectrum.h"
+#include <unordered_map>
+#include <string>
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TMath.h>
+#include <TLorentzVector.h>
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/TMVAGui.h"
 
 const float JPsi_M = 3.096;
 const float Upsilon_M = 9.460;
@@ -114,7 +121,7 @@ void MassSpectrum::Loop(TFile * out, string particle, TString whichGuys, TString
 	
 	Long64_t nentries = fChain->GetEntriesFast();
 //	cout << "Number of entries:" << nentries << endl;
-	if(debug) nentries = 100000;
+	if(debug) nentries = 1000;
 	
 	out->cd();
 	

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "TChain.h"
 #include "TFile.h"
@@ -15,9 +16,6 @@
 #include "TMVA/Factory.h"
 #include "TMVA/DataLoader.h"
 #include "TMVA/TMVARegGui.h"
-
-
-TString NTupleDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/";
 
 
 float deltaPhi(float phi1, float phi2) {
@@ -60,6 +58,8 @@ class LoadFiles {
 	private:
 	static const int NEras = 6;
 	TString eras[NEras] = {"A","B","C","D","E","F"};
+	TString dataset, year, ID;
+	TString NTupleDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/";
 	vector<TFile *> InitializedFiles;
 	vector<TTree *> regTree; 
 	
@@ -67,13 +67,25 @@ class LoadFiles {
 	void DataLoadFiles(vector<TFile *> Files, TMVA::DataLoader * dataloader);
 	
 	public:
-	void FilesInReg(TString fileEras, TMVA::DataLoader * dataloader);
+	LoadFiles(TString _dataset, TString _year, TString _ID);
+	void FilesInReg(TString fileEras, bool useTotalEras, TMVA::DataLoader * dataloader);
 };
 
-void LoadFiles::FilesInReg(TString fileEras, TMVA::DataLoader * dataloader) {
-	for(int i = 0; i < NEras; i++) {
-		if( fileEras.Contains( eras[i] ) ) {
-			if( InitializeFile( eras[i] ) != NULL ) InitializedFiles.push_back( InitializeFile( eras[i] ) );
+LoadFiles::LoadFiles(TString _dataset, TString _year, TString _ID) {
+	dataset = _dataset;
+	year = _year;
+	ID = _ID;
+}
+
+void LoadFiles::FilesInReg(TString fileEras, bool useTotalEras, TMVA::DataLoader * dataloader) {
+	if(useTotalEras) {
+		if( InitializeFile( fileEras ) != NULL ) InitializedFiles.push_back( InitializeFile( fileEras ) );
+	}
+	else {
+		for(int i = 0; i < NEras; i++) {
+			if( fileEras.Contains( eras[i] ) ) {
+				if( InitializeFile( eras[i] ) != NULL ) InitializedFiles.push_back( InitializeFile( eras[i] ) );
+			}
 		}
 	}
 	DataLoadFiles(InitializedFiles, dataloader);
@@ -81,7 +93,7 @@ void LoadFiles::FilesInReg(TString fileEras, TMVA::DataLoader * dataloader) {
 
 TFile * LoadFiles::InitializeFile(TString era) {
 	TFile *input(0);
-	TString fname = NTupleDir+"L1toRecoMatchPlots_ZeroBias2017_tight_"+era+".root";
+	TString fname = NTupleDir+"L1toRecoMatchPlots_"+dataset+year+"_"+ID+"_"+era+".root";
 	if (!gSystem->AccessPathName( fname )) {
 		input = TFile::Open( fname );
 		//cout << "--- TMVARegression           : Using input file: " << input->GetName() << endl;
@@ -97,8 +109,9 @@ TFile * LoadFiles::InitializeFile(TString era) {
 void LoadFiles::DataLoadFiles(vector<TFile *> Files, TMVA::DataLoader * dataloader) {
 	regTree.clear();
 	for(int i = 0; i < Files.size(); i++) {
-			regTree.push_back( (TTree*)Files.at(i)->Get("mytree") );
-			dataloader->AddRegressionTree( regTree.at(i) );
+		regTree.push_back( (TTree*)Files.at(i)->Get("mytree") );
+		dataloader->AddRegressionTree( regTree.at(i) );
+		cout << "--- TMVARegression           : Using input file: " << Files.at(i)->GetName() << endl;
 	}
 	return;
 }
@@ -106,10 +119,8 @@ void LoadFiles::DataLoadFiles(vector<TFile *> Files, TMVA::DataLoader * dataload
 
 using namespace TMVA;
 
-void TMVARegression( TString TF, TString fileEras, TString guys, TString extraText = "")
+void TMVARegression( TString dataset, TString year, TString ID, TString TF, TString fileEras, bool useTotalEras, TString guys, TString extraText, TString etaOrIndex)
 {
-	TString etaOrIndex = "Eta"; // or "Index"
-	
 	Tools::Instance();
 	
 	
@@ -117,7 +128,8 @@ void TMVARegression( TString TF, TString fileEras, TString guys, TString extraTe
 	cout << "==> Start TMVARegression" << endl;
 	
 	
-	TString outfileName( "TMVARegression_TF"+TF+"_Era"+fileEras+"_Guys"+guys+"_"+etaOrIndex+extraText );
+	TString CMSSW_BASE = getenv("CMSSW_BASE");
+	TString outfileName( CMSSW_BASE+"/src/L1uGMTAnalyzer/Configuration/test/TMVATraining/TMVARegression_TF"+TF+"_Era"+fileEras+"_Guys"+guys+"_"+etaOrIndex+extraText );
 	TFile* outputFile = TFile::Open( outfileName+".root", "RECREATE" );
 	
 	TMVA::Factory *factory = new TMVA::Factory( "TMVARegression", outputFile,"!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression" );
@@ -133,7 +145,7 @@ void TMVARegression( TString TF, TString fileEras, TString guys, TString extraTe
 	dataloader->AddTarget( "deltaPhi(L1muon_phiAtVtx,recomuon_phi)" );
 	
 	
-	LoadFiles TMVAInputFiles; TMVAInputFiles.FilesInReg(fileEras,dataloader);
+	LoadFiles TMVAInputFiles(dataset,year,ID); TMVAInputFiles.FilesInReg(fileEras,useTotalEras,dataloader);
 	
 	
 	TCut mycut = " recomuon_dr >= 0.0 && recomuon_dr < 0.2 ";
