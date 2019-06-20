@@ -5,7 +5,9 @@ import sys
 helpText = "\n Choose what to run: --skim or --TMVATrain or --MVATest or --scout (not implemented yet)\n \
 \n \
 Mandatory arguments for all but --scout: --dataset, --year, --era\n \
-Optional arguments for all but --scout: --useTotalEras, --ID, --extraText, --debug\n \
+Optional arguments for all but --scout: --useTotalEras, --ID, --extraText, --debug --outDir\n \
+\n \
+Optional arguments for --skim: --onlytxt\n \
 \n \
 Mandatory arguments for --TMVATrain: --TF\n \
 Optional arguments for --TMVATrain:  --guys\n \
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     parser.add_option("--TFBinMethod", dest="TFBinMethodOpt", default="Eta", help="Choose how to separate the different Track Finders (TF), Eta or Index [Default: %default]")
     parser.add_option("--particle", dest="particleOpt", default="JPsi", help="Choose particle for mass comparison, JPsi or Upsilon [Default: %default]")
     parser.add_option("--outDir", dest="outDir", default="/eos/cms/store/cmst3/user/evourlio/", help="Directory where output will be saved [Default: %default]")
-    #parser.add_option("--onlytxt", dest="onlytxt", default=False, action="store_true", help="Skimming: Write output only in txt file. Do not store the branches in root file [Default: %default]")
+    parser.add_option("--onlytxt", dest="onlytxt", default=False, action="store_true", help="Skimming: Write output only in txt file. Do not store the branches in root file [Default: %default]")
     options, args = parser.parse_args()
 
     def interpretEras(eras,totalEras):
@@ -68,16 +70,10 @@ if __name__ == "__main__":
 				    inputChain = ROOT.TChain("events")
 				    inputChain.Add(inputFileNames[iera])
 				    print "with",inputChain.GetEntries(),"entries\n"
-				    outFileName = options.outDir+"L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+era+extraText+".root"
-				    outFile = ROOT.TFile(outFileName,"recreate")
-				    print "Created output file: "+outFileName
+				    outFileName = options.outDir+"L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+era+extraText+".txt"
 				    #Running
 				    L = ROOT.L1toRecoMatcher(inputChain)
-				    L.Loop(options.IDOpt,outFile,options.debugOpt);
-				    #Closing procedures
-				    outFile.Write();
-				    outFile.Close();
-				    print "Output file written and closed!\n"
+				    L.Loop(options.IDOpt, outFileName, options.debugOpt, options.onlytxt);
 		    else: print "Input file doesn't exist..."
 		    print ""
 
@@ -87,16 +83,10 @@ if __name__ == "__main__":
 			    fileExists = os.path.isfile(inputFileName)
 			    if fileExists: inputChain.Add(inputFileName)
 		    print "with",inputChain.GetEntries(),"entries in total\n"
-		    outFileName = options.outDir+"L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+totalEras+extraText+".root"
-		    outFile = ROOT.TFile(outFileName,"recreate");
-		    print "Created output file: "+outFileName
+		    outFileName = options.outDir+"L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+totalEras+extraText+".txt"
 		    #Running
 		    L = ROOT.L1toRecoMatcher(inputChain)
-		    L.Loop(options.IDOpt,outFile,options.debugOpt);
-		    #Closing procedures
-		    outFile.Write();
-		    outFile.Close();
-		    print "Output file written and closed!"
+		    L.Loop(options.IDOpt, outFileName ,options.debugOpt, options.onlytxt);
 
 
     # TMVA Training

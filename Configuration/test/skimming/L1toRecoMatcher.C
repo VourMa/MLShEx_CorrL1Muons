@@ -61,14 +61,13 @@ void getProf(TFile & infile, TString histoname_1, TProfile & prof_1, TString his
 
 
 
-void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
+void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 {
 	if (fChain == 0) return;
 	
 	Long64_t nentries = fChain->GetEntriesFast();
 	//cout << "Total number of events: " << nentries << endl;
-	if( debug == 1 ) nentries = 1000;
-	
+	if( debug == 1 ) nentries = 1000;	
 	
 	//___Get the profile histograms___
 	TFile profFile("/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/plots_tight_test_profile.root","read");
@@ -78,15 +77,13 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 
 	//Create txt output file
 	std::ofstream outfile;
-	TString outfileName = out->GetName();
-	outfileName.ReplaceAll(".root",".txt");
-	outfile.open(outfileName);
-	
+	outfile.open(out);	
+	std::cout<<"Created output file: "<<out<<std::endl;
+
+
 	//___Definitions__//
-	out->cd();
- 
 	TTree * mytree =new TTree("mytree","mytree");
-	
+
 	int event_ = 0, recomuon_N, L1muon_N;
 	MatchedMuons recomuon, L1muon;
 	
@@ -118,8 +115,8 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 		if (ientry < 0) break;
 		nb = fChain->GetEntry(jentry);   nbytes += nb;
 
-		if( !debug && (ientry % 1000000 == 0 )) cout << "I have processed " << ientry << " events!" << endl;
-		if(  debug && (ientry % (nentries/10) == 0 ))     cout << "I have processed " << ientry << " events!" << endl;
+		double bprint = (debug) ? (ientry % (nentries/10) == 0) : (ientry % 1000000 == 0);
+		if(bprint) cout << "I have processed " << ientry << " events!" << endl;
 
 		int nReco = 0;
 		std::map<float, pair<int, int> > dr_reco_L1;
@@ -180,7 +177,6 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 				L1muon.Eta.push_back( muon_eta->at(L1Index_map) );
 				
 				double bin, corrFactor = 2.0;
-				double corrPt;
 				if( fabs( L1muon.Eta.back() ) <= 0.8)
 				{
 					bin = BMTF.FindBin( L1muon.Pt.back() );
@@ -189,7 +185,7 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 					//L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
 				}
 				
-				if( fabs( L1muon.Eta.back() ) > 0.8 && fabs( L1muon.Eta.back() ) <= 1.2)
+				else if( fabs( L1muon.Eta.back() ) > 0.8 && fabs( L1muon.Eta.back() ) <= 1.2)
 				{
 					bin = OMTF.FindBin( L1muon.Pt.back() );
 					corrFactor = OMTF.GetBinContent( bin );
@@ -197,12 +193,15 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 					//L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
 				}
 				
-				if( fabs( L1muon.Eta.back() ) > 1.2)
+				else if( fabs( L1muon.Eta.back() ) > 1.2)
 				{
 					bin = EMTF.FindBin( L1muon.Pt.back() );
 					corrFactor = EMTF.GetBinContent( bin );
 					if( corrFactor == 0.0 ) corrFactor = 3.0; //Correct for empty bins
 					//L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
+				}
+				else{
+				  std::cout<<"Never reach here!"<<std::endl;
 				}
 				L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
 				//cout << "pt = " << L1muon.Pt.back() << " eta = " << L1muon.Eta.back() << endl;
@@ -246,7 +245,20 @@ void L1toRecoMatcher::Loop(TString ID,TFile * out, bool debug)
 		}
 		event_++;
 		recomuon_N = recomuon.Size(); L1muon_N = L1muon.Size(); 
-		mytree->Fill();
+		if (!onlytxt) mytree->Fill();
 	}
 	outfile.close();
+	
+	//Write TTree in new Root file 
+	if (!onlytxt){
+	  TString outRootName = out;
+	  outRootName.ReplaceAll(".txt",".root");
+	  TFile *outFileRoot = new TFile(outRootName,"RECREATE");
+	  std::cout<<"Created output file: "<<outRootName<<std::endl;
+	  outFileRoot->cd();
+	  mytree->Write();
+	  outFileRoot->Close();
+	  std::cout<<"Output file written and closed!\n"<<std::endl;
+	}
+
 }
