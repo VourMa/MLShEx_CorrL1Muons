@@ -35,7 +35,8 @@ if __name__ == "__main__":
     parser.add_option("--performOn", dest="performOnOpt", default="A", help="Choose muon category to apply the training, separated by commas. A for all, B for pt <= 10 or pt >= 40, G for pt >= 10 and pt <= 40 [Default: %default]")
     parser.add_option("--TFBinMethod", dest="TFBinMethodOpt", default="Eta", help="Choose how to separate the different Track Finders (TF), Eta or Index [Default: %default]")
     parser.add_option("--particle", dest="particleOpt", default="JPsi", help="Choose particle for mass comparison, JPsi or Upsilon [Default: %default]")
-
+    parser.add_option("--outDir", dest="outDir", default="/eos/cms/store/cmst3/user/evourlio/", help="Directory where output will be saved [Default: %default]")
+    #parser.add_option("--onlytxt", dest="onlytxt", default=False, action="store_true", help="Skimming: Write output only in txt file. Do not store the branches in root file [Default: %default]")
     options, args = parser.parse_args()
 
     def interpretEras(eras,totalEras):
@@ -67,7 +68,7 @@ if __name__ == "__main__":
 				    inputChain = ROOT.TChain("events")
 				    inputChain.Add(inputFileNames[iera])
 				    print "with",inputChain.GetEntries(),"entries\n"
-				    outFileName = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+era+extraText+".root"
+				    outFileName = options.outDir+"L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+era+extraText+".root"
 				    outFile = ROOT.TFile(outFileName,"recreate")
 				    print "Created output file: "+outFileName
 				    #Running
@@ -86,7 +87,7 @@ if __name__ == "__main__":
 			    fileExists = os.path.isfile(inputFileName)
 			    if fileExists: inputChain.Add(inputFileName)
 		    print "with",inputChain.GetEntries(),"entries in total\n"
-		    outFileName = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+totalEras+extraText+".root"
+		    outFileName = options.outDir+"L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+"_"+options.IDOpt+"_"+totalEras+extraText+".root"
 		    outFile = ROOT.TFile(outFileName,"recreate");
 		    print "Created output file: "+outFileName
 		    #Running
@@ -131,7 +132,7 @@ if __name__ == "__main__":
 
 		    for iera, era in enumerate(eras):
 			    print "Getting file of era "+era
-			    inputFileNames.append('/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_'+options.datasetOpt+options.yearOpt+'_'+options.IDOpt+'_'+era+'.root')
+			    inputFileNames.append(options.outDir+'L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_'+options.datasetOpt+options.yearOpt+'_'+options.IDOpt+'_'+era+'.root')
 			    fileExists = os.path.isfile(inputFileNames[iera])
 			    if fileExists:
 				    if not options.useTotalErasOpt:
