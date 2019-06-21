@@ -67,7 +67,7 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 	
 	Long64_t nentries = fChain->GetEntriesFast();
 	//cout << "Total number of events: " << nentries << endl;
-	if( debug == 1 ) nentries = 1000;	
+	if( debug == 1 ) nentries = 100000;	
 	
 	//___Get the profile histograms___
 	TFile profFile("/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/plots_tight_test_profile.root","read");
@@ -115,7 +115,7 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 		if (ientry < 0) break;
 		nb = fChain->GetEntry(jentry);   nbytes += nb;
 
-		double bprint = (debug) ? (ientry % (nentries/10) == 0) : (ientry % 1000000 == 0);
+		bool bprint = (debug) ? (ientry % (nentries/10) == 0) : (ientry % 1000000 == 0);
 		if(bprint) cout << "I have processed " << ientry << " events!" << endl;
 
 		int nReco = 0;
@@ -178,31 +178,25 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 				
 				double bin, corrFactor = 2.0;
 				if( fabs( L1muon.Eta.back() ) <= 0.8)
-				{
-					bin = BMTF.FindBin( L1muon.Pt.back() );
-					corrFactor = BMTF.GetBinContent( bin );
-					if( corrFactor == 0.0 ) corrFactor = 2.0; //Correct for empty bins
-					//L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
-				}
+				  {
+				    bin = BMTF.FindBin( L1muon.Pt.back() );
+				    corrFactor = BMTF.GetBinContent( bin );
+				    if( corrFactor == 0.0 ) corrFactor = 2.0; //Correct for empty bins
+				  }
 				
-				else if( fabs( L1muon.Eta.back() ) > 0.8 && fabs( L1muon.Eta.back() ) <= 1.2)
-				{
-					bin = OMTF.FindBin( L1muon.Pt.back() );
-					corrFactor = OMTF.GetBinContent( bin );
-					if( corrFactor == 0.0 ) corrFactor = 2.0; //Correct for empty bins
-					//L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
-				}
+				else if( fabs( L1muon.Eta.back() ) <= 1.2)
+				  {
+				    bin = OMTF.FindBin( L1muon.Pt.back() );
+				    corrFactor = OMTF.GetBinContent( bin );
+				    if( corrFactor == 0.0 ) corrFactor = 2.0; //Correct for empty bins
+				  }
 				
-				else if( fabs( L1muon.Eta.back() ) > 1.2)
-				{
-					bin = EMTF.FindBin( L1muon.Pt.back() );
-					corrFactor = EMTF.GetBinContent( bin );
-					if( corrFactor == 0.0 ) corrFactor = 3.0; //Correct for empty bins
-					//L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
-				}
-				else{
-				  std::cout<<"Never reach here!"<<std::endl;
-				}
+				else //( fabs( L1muon.Eta.back() ) > 1.2)
+				  {
+				    bin = EMTF.FindBin( L1muon.Pt.back() );
+				    corrFactor = EMTF.GetBinContent( bin );
+				    if( corrFactor == 0.0 ) corrFactor = 3.0; //Correct for empty bins
+				  }
 				L1muon.PtCorr.push_back( L1muon.Pt.back() / corrFactor );
 				//cout << "pt = " << L1muon.Pt.back() << " eta = " << L1muon.Eta.back() << endl;
 				//cout << "bin = " << bin << " corrFactor = " << corrFactor << endl;
@@ -215,13 +209,14 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 				L1muon.TfMuonIndex.push_back( muon_tfMuonIndex->at(L1Index_map) );
 				L1muon.HwQual.push_back( muon_hwQual->at(L1Index_map) );
 				
-				//recomuon_pt, recomuon_eta, recomuon_phi, dr_map, muon_pt, muon_ptCorr, muon_eta, muon_etaAtVtx, muon_phi, muon_phiAtVtx, muon_charge, muon_tfMuonIndex, muon_hwQual
+				//recomuon_pt, recomuon_eta, recomuon_phi, dr_map, muon_pt, muon_ptCorr, muon_eta, muon_etaAtVtx, muon_phi, muon_phiAtVtx, muon_charge, muon_tfMuonIndex, muon_hwQual, DPhi(muon_PhiAtVtx->at(L1Index_map)
 				outfile << std::setw(12) << recomuon_pt->at(recoIndex_map)    << std::setw(12) << recomuon_eta->at(recoIndex_map) 
 					<< std::setw(12) << recomuon_phi->at(recoIndex_map)   << std::setw(12) << dr_map << std::setw(12) << muon_pt->at(L1Index_map) 
 					<< std::setw(12) << L1muon.Pt.back() / corrFactor     << std::setw(12) << muon_eta->at(L1Index_map)
 					<< std::setw(12) << muon_EtaAtVtx->at(L1Index_map)    << std::setw(12) << muon_phi->at(L1Index_map) 
 					<< std::setw(12) << muon_PhiAtVtx->at(L1Index_map)    << std::setw(12) << muon_charge->at(L1Index_map)   
-					<< std::setw(12) << muon_tfMuonIndex->at(L1Index_map) << std::setw(12) << muon_hwQual->at(L1Index_map) << std::endl;
+					<< std::setw(12) << muon_tfMuonIndex->at(L1Index_map) << std::setw(12) << muon_hwQual->at(L1Index_map)
+					<< std::setw(12) << DPhi(muon_PhiAtVtx->at(L1Index_map), recomuon_phi->at(recoIndex_map)) <<std::endl;
 			}
 			else {
 				L1muon.Pt.push_back( -100.0 );
@@ -238,7 +233,7 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 					<< std::setw(12) << recomuon_phi->at(recoIndex_map)   << std::setw(12) << dr_map 
 					<< std::setw(12) << -100.0 << std::setw(12) << -100.0 << std::setw(12) << -100.0 << std::setw(12) << -100.0 
 					<< std::setw(12) << -100.0 << std::setw(12) << -100.0 << std::setw(12) << -100.0 << std::setw(12) << -100.0 
-					<< std::setw(12) << -100.0 << std::endl;
+					<< std::setw(12) << -100.0 << std::setw(12) << -100.0 << std::endl;
 			}
 			recomuon.Charge.push_back( L1muon.Charge.back() );
 			recomuon.HwQual.push_back( L1muon.HwQual.back() );
