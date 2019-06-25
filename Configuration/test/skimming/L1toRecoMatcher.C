@@ -87,13 +87,32 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 		<< std::setw(10) << "dr_map"    << std::setw(10) << "dphi" << std::endl;						
 	
 	//___Definitions__//	
-	int event_i;
-	std::vector <int> event_, recomuon_N, L1muon_N;
+	int event_, recomuon_N, L1muon_N;
 	MatchedMuons recomuon, L1muon;
 	
+	TTree * mytree =new TTree("mytree","mytree");	
+	mytree->Branch("event",             &event_);
+	mytree->Branch("recomuon_N",        &recomuon_N);
+	mytree->Branch("recomuon_pt",       &recomuon.Pt);
+	mytree->Branch("recomuon_eta",      &recomuon.Eta);
+	mytree->Branch("recomuon_etaAtVtx", &recomuon.EtaAtVtx);
+	mytree->Branch("recomuon_phi",      &recomuon.Phi);
+	mytree->Branch("recomuon_phiAtVtx", &recomuon.PhiAtVtx);
+	mytree->Branch("recomuon_dr",       &recomuon.Dr);
+	mytree->Branch("L1muon_N",          &L1muon_N);
+	mytree->Branch("L1muon_pt",         &L1muon.Pt);
+	mytree->Branch("L1muon_ptCorr",     &L1muon.PtCorr);
+	mytree->Branch("L1muon_eta",        &L1muon.Eta);
+	mytree->Branch("L1muon_etaAtVtx",   &L1muon.EtaAtVtx);
+	mytree->Branch("L1muon_phi",        &L1muon.Phi);
+	mytree->Branch("L1muon_phiAtVtx",   &L1muon.PhiAtVtx);
+	mytree->Branch("L1muon_charge",     &L1muon.Charge);
+	mytree->Branch("L1muon_tfMuonIndex",&L1muon.TfMuonIndex);
+	mytree->Branch("L1muon_hwQual",     &L1muon.HwQual);
+
 	Long64_t nbytes = 0, nb = 0;
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
-		Long64_t ientry = LoadTree(jentry);
+		Long64_t ientry = LoadTree(jentry);		
 		if (ientry < 0) break;
 		nb = fChain->GetEntry(jentry);   nbytes += nb;
 
@@ -102,7 +121,7 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 
 		int nReco = 0;
 		std::map<float, pair<int, int> > dr_reco_L1;
-
+		recomuon.Clear(); L1muon.Clear();
 
 		for(unsigned int i = 0; i < recomuon_pt->size(); i++) {
 			if(ID == "tight") if(recomuon_isTightMuon->at(i) == 0) continue;
@@ -157,7 +176,7 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 		  //L1 muon
 		  float l1_pt, l1_eta, l1_ptCorr, l1_phi, l1_etaAtVtx, l1_phiAtVtx, l1_charge, l1_tfMuonIndex, l1_hwQual;
 		  l1_pt = l1_eta = l1_ptCorr = l1_phi = l1_etaAtVtx = l1_phiAtVtx = l1_charge = l1_tfMuonIndex = l1_hwQual = -100.0;
-			
+		  
 		  //DeltaPhi(l1muon, recomuon)
 		  float dphi = -100.0;
 
@@ -172,7 +191,7 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 		    l1_hwQual      = muon_hwQual->at(L1Index_map);
 
 		    dphi = DPhi(muon_PhiAtVtx->at(L1Index_map), recomuon_phi->at(recoIndex_map));
-			  
+		    
 		    double bin, corrFactor = 2.0;
 		    if( fabs( l1_eta ) <= 0.8)
 		      {
@@ -228,36 +247,15 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 		}
 		
 		if (!onlytxt){
-		  event_i ++;
-		  event_.push_back(event_i);
-		  recomuon_N.push_back(dr_reco_L1.size()); 
-		  L1muon_N.push_back(dr_reco_L1.size());
+		  event_ ++;
+		  recomuon_N = recomuon.Size(); L1muon_N = L1muon.Size();
+		  mytree->Fill();
 		}
 	}
 	outfile.close();
 	
 	//Write TTree in root file 
 	if (!onlytxt){
-	  TTree * mytree =new TTree("mytree","mytree");	
-	  mytree->Branch("event",             &event_);
-	  mytree->Branch("recomuon_N",        &recomuon_N);
-	  mytree->Branch("recomuon_pt",       &recomuon.Pt);
-	  mytree->Branch("recomuon_eta",      &recomuon.Eta);
-	  mytree->Branch("recomuon_etaAtVtx", &recomuon.EtaAtVtx);
-	  mytree->Branch("recomuon_phi",      &recomuon.Phi);
-	  mytree->Branch("recomuon_phiAtVtx", &recomuon.PhiAtVtx);
-	  mytree->Branch("recomuon_dr",       &recomuon.Dr);
-	  mytree->Branch("L1muon_N",          &L1muon_N);
-	  mytree->Branch("L1muon_pt",         &L1muon.Pt);
-	  mytree->Branch("L1muon_ptCorr",     &L1muon.PtCorr);
-	  mytree->Branch("L1muon_eta",        &L1muon.Eta);
-	  mytree->Branch("L1muon_etaAtVtx",   &L1muon.EtaAtVtx);
-	  mytree->Branch("L1muon_phi",        &L1muon.Phi);
-	  mytree->Branch("L1muon_phiAtVtx",   &L1muon.PhiAtVtx);
-	  mytree->Branch("L1muon_charge",     &L1muon.Charge);
-	  mytree->Branch("L1muon_tfMuonIndex",&L1muon.TfMuonIndex);
-	  mytree->Branch("L1muon_hwQual",     &L1muon.HwQual);
-	  mytree->Fill();
 	  TString outName = out;
 	  outName.ReplaceAll(".txt",".root");
 	  TFile *outFile = new TFile(outName,"RECREATE");
@@ -267,6 +265,6 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 	  outFile -> Close();
 	  std::cout<<"Output file written and closed!\n"<<std::endl;
 	}
-
+	
 }
 
