@@ -129,13 +129,13 @@ void TMVARegression( TString dataset, TString year, TString ID, TString TF, TStr
 	
 	
 	TString CMSSW_BASE = getenv("CMSSW_BASE");
-	TString outfileName( CMSSW_BASE+"/src/L1uGMTAnalyzer/Configuration/test/TMVATraining/TMVARegression_TF"+TF+"_Era"+fileEras+"_Guys"+guys+"_"+etaOrIndex+extraText );
+	TString dataloaderName( "TMVARegression_TF"+TF+"_Era"+fileEras+"_Guys"+guys+"_"+etaOrIndex+extraText );
+	TString outfileName( CMSSW_BASE+"/src/MLShEx_CorrL1Muons/Configuration/test/TMVATraining/"+dataloaderName );
 	TFile* outputFile = TFile::Open( outfileName+".root", "RECREATE" );
 	
 	TMVA::Factory *factory = new TMVA::Factory( "TMVARegression", outputFile,"!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression" );
 	
-	
-	TMVA::DataLoader *dataloader=new TMVA::DataLoader(outfileName);
+	TMVA::DataLoader *dataloader=new TMVA::DataLoader(dataloaderName);
 	
 	dataloader->AddVariable( "L1muon_ptCorr", "p_{T,corrected}(L1 #mu)", "GeV", 'F' );
 	dataloader->AddVariable( "L1muon_eta", "#eta(L1 #mu)", "", 'F' );
@@ -162,7 +162,6 @@ void TMVARegression( TString dataset, TString year, TString ID, TString TF, TStr
 	
 	
 	factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+20:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15" );
-	//factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", "");
 	
 	factory->TrainAllMethods();
 	factory->TestAllMethods();

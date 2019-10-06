@@ -144,7 +144,7 @@ void Resolutions::Loop(TFile * out, TString whichGuys, TString performOnWhichGuy
 			if( whichGuys == "Combined" ) {
 				if( readerpTtemp == "B" ) correctThePhi(readerTFTemp, "A", DphiL1Reco, PhiRecoReg);
 				else correctThePhi(readerTFTemp, "G", DphiL1Reco, PhiRecoReg);
-				//Change "B" and "G" according to the best combination
+				//Change "A", "B" and "G" according to the best combination
 			}
 			else correctThePhi(readerTFTemp, string(whichGuys), DphiL1Reco, PhiRecoReg);
 			

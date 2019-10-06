@@ -1,8 +1,0 @@
-executable              = TMVARegression.sh
-arguments               = TF ERA GUYS EXTRATEXT
-output                  = TMVARegression_out/TMVARegression.$(ClusterId).$(ProcId).out
-error                   = TMVARegression_err/TMVARegression.$(ClusterId).$(ProcId).err
-log                     = TMVARegression.$(ClusterId).log
-
-+JobFlavour = "QUEUE"
-queue NJOBS

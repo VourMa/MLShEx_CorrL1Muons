@@ -1,8 +1,8 @@
-//#define L1toRecoMatcher_cxx
+//#define skimming_cxx
 #include <iomanip>
 #include <iostream>
 #include <fstream>
-#include "L1toRecoMatcher.h"
+#include "skimming.h"
 #include "TLorentzVector.h"
 #include "TProfile.h"
 #include "TFile.h"
@@ -61,7 +61,7 @@ void getProf(TFile & infile, TString histoname_1, TProfile & prof_1, TString his
 
 
 
-void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
+void skimming::Loop(TString ID,TString out, bool debug, bool onlytxt)
 {
 	if (fChain == 0) return;
 	
@@ -135,10 +135,7 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 			
 			bool NotMatchedAtSt = false;
 			for(unsigned int j = 0; j < muon_pt->size(); j++) {
-				float dr = -9999;
-				if (recomuon_phiAtSt2->at(i) != -9999) dr = DR( recomuon_eta->at(i),recomuon_phiAtSt2->at(i),muon_eta->at(j),muon_phi->at(j) );
-				else if (recomuon_phiAtSt1->at(i) != -9999) dr = DR( recomuon_eta->at(i),recomuon_phiAtSt1->at(i),muon_eta->at(j),muon_phi->at(j) );
-				else NotMatchedAtSt = true;
+				float dr = DR( recomuon_eta->at(i),recomuon_phi->at(i),muon_eta->at(j),muon_phi->at(j) );
 				pair<int,int> reco_L1 (i,j);
 				dr_reco_L1.insert(pair<float, pair<int, int> > (dr,reco_L1));
 			}
@@ -184,13 +181,13 @@ void L1toRecoMatcher::Loop(TString ID,TString out, bool debug, bool onlytxt)
 		    l1_pt          = muon_pt->at(L1Index_map);
 		    l1_eta         = muon_eta->at(L1Index_map);
 		    l1_phi         = muon_phi->at(L1Index_map);
-		    l1_etaAtVtx    = muon_EtaAtVtx->at(L1Index_map);
-		    l1_phiAtVtx    = muon_PhiAtVtx->at(L1Index_map);
+		    l1_etaAtVtx    = muon_etaAtVtx->at(L1Index_map);
+		    l1_phiAtVtx    = muon_phiAtVtx->at(L1Index_map);
 		    l1_charge      = muon_charge->at(L1Index_map);
 		    l1_tfMuonIndex = muon_tfMuonIndex->at(L1Index_map);
 		    l1_hwQual      = muon_hwQual->at(L1Index_map);
 
-		    dphi = DPhi(muon_PhiAtVtx->at(L1Index_map), recomuon_phi->at(recoIndex_map));
+		    dphi = DPhi(muon_phiAtVtx->at(L1Index_map), recomuon_phi->at(recoIndex_map));
 		    
 		    double bin, corrFactor = 2.0;
 		    if( fabs( l1_eta ) <= 0.8)
