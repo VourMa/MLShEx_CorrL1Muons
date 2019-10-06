@@ -1,4 +1,3 @@
-# Corrections for GMT Muons
+# CMS Data Analysis School (DAS) 2019, Beijing - Machine Learning Short Exercise: Using NN to Correct L1 Muons
 
-The code to produce the pT and φ(AtVtx) correction factors for GMT muons (Muon Scouting).
-Production of NTuples, extraction of pT corrections by using profile plots and refinement of φ extrapolation by using a Neural Network.
+This is the master branch, meant to be a reference. For the exercise, please clone the branch "exercise".
