@@ -27,7 +27,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, '100X_upgrade2018_realistic_v10
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
-process.Ana = cms.EDAnalyzer('L1uGMTAnalyzer_OnlyL1',
+process.Ana = cms.EDAnalyzer('L1uGMTAnalyzer',
     saveTags = cms.bool( True ),
     CandTag = cms.InputTag( 'gmtStage2Digis','Muon' ),
 )
@@ -42,7 +42,7 @@ process.source = cms.Source( "PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("outputL1uGMTAnalyzer_OnlyL1.root")
+                                   fileName = cms.string("outputL1uGMTAnalyzer.root")
 )
 
 process.p = cms.Path(process.Ana)

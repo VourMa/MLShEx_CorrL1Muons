@@ -1,4 +1,4 @@
-// Class:      L1uGMTAnalyzer_OnlyL1
+// Class:      L1uGMTAnalyzer
 //
 // Original Author:  Manos Vourliotis
 //         Created:  Mon, 26 Aug 2019 
@@ -33,10 +33,10 @@
 
 
 // Class declaration
-class L1uGMTAnalyzer_OnlyL1 : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class L1uGMTAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 	public:
-		explicit L1uGMTAnalyzer_OnlyL1(const edm::ParameterSet&);
-		~L1uGMTAnalyzer_OnlyL1();
+		explicit L1uGMTAnalyzer(const edm::ParameterSet&);
+		~L1uGMTAnalyzer();
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 		
 	private:
@@ -77,18 +77,18 @@ class L1uGMTAnalyzer_OnlyL1 : public edm::one::EDAnalyzer<edm::one::SharedResour
 };
 
 // Constructor
-L1uGMTAnalyzer_OnlyL1::L1uGMTAnalyzer_OnlyL1(const edm::ParameterSet& iConfig) :
+L1uGMTAnalyzer::L1uGMTAnalyzer(const edm::ParameterSet& iConfig) :
 candTag_( iConfig.getParameter<edm::InputTag>("CandTag") ),
 candToken_( consumes<l1t::MuonBxCollection>(candTag_)) {
     events = new TTree("events","events");
 }
 
 // Destructor
-L1uGMTAnalyzer_OnlyL1::~L1uGMTAnalyzer_OnlyL1() {
+L1uGMTAnalyzer::~L1uGMTAnalyzer() {
 }
 
 // Method called for each event
-void L1uGMTAnalyzer_OnlyL1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void L1uGMTAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	using namespace std;
 	using namespace edm;
 	using namespace l1t;
@@ -126,7 +126,7 @@ void L1uGMTAnalyzer_OnlyL1::analyze(const edm::Event& iEvent, const edm::EventSe
 }
 
 // Method called once, just before starting the event loop 
-void L1uGMTAnalyzer_OnlyL1::beginJob() {
+void L1uGMTAnalyzer::beginJob() {
 	events->Branch("counter",&counter);
 	
 	events->Branch("Run",&Run,"Run/l");
@@ -156,16 +156,16 @@ void L1uGMTAnalyzer_OnlyL1::beginJob() {
 }
 
 // Method called once, just after ending the event loop  ------------
-void L1uGMTAnalyzer_OnlyL1::endJob() {
+void L1uGMTAnalyzer::endJob() {
 }
 
 // Method that fills 'descriptions' with the allowed parameters for the module
 void
-L1uGMTAnalyzer_OnlyL1::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+L1uGMTAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 	edm::ParameterSetDescription desc;
 	desc.setUnknown();
 	descriptions.addDefault(desc);
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(L1uGMTAnalyzer_OnlyL1);
+DEFINE_FWK_MODULE(L1uGMTAnalyzer);
