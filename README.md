@@ -2,7 +2,7 @@
 
 ## Setup
 * cmsrel CMSSW_10_2_11
-If there is an architecture problem, set SCRAM_ARCH=slc7_amd64_gcc700.
+...If there is an architecture problem, set SCRAM_ARCH=slc7_amd64_gcc700.
 * cd CMSSW_10_2_11/
 * cmsenv
 * git cms-init
