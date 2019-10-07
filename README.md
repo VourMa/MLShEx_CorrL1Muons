@@ -1,7 +1,7 @@
 # CMS Data Analysis School (DAS) 2019, Beijing - Machine Learning Short Exercise: Using NN to Correct L1 Muons
 
 ## Setup
-* cmsrel CMSSW_10_2_11
+* cmsrel CMSSW_10_2_11  
    If there is an architecture problem, set SCRAM_ARCH=slc7_amd64_gcc700.
 * cd CMSSW_10_2_11/
 * cmsenv
