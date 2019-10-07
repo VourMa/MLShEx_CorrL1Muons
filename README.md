@@ -1,15 +1,15 @@
 # CMS Data Analysis School (DAS) 2019, Beijing - Machine Learning Short Exercise: Using NN to Correct L1 Muons
 
 ## Setup
-* cmsrel CMSSW_10_2_11  
+* _cmsrel CMSSW_10_2_11_  
    If there is an architecture problem, set SCRAM_ARCH=slc7_amd64_gcc700.
-* cd CMSSW_10_2_11/
-* cmsenv
-* git cms-init
-* cd src/
-* git clone git@github.com:VourMa/MLShEx_CorrL1Muons.git MLShEx_CorrL1Muons --single-branch --branch exercise
-* scram b -j 4
-* cd MLShEx_CorrL1Muons/Configuration/
+* _cd CMSSW_10_2_11/_
+* _cmsenv_
+* _git cms-init_
+* _cd src/_
+* _git clone git@github.com:VourMa/MLShEx_CorrL1Muons.git MLShEx_CorrL1Muons --single-branch --branch exercise_
+* _scram b -j 4_
+* _cd MLShEx_CorrL1Muons/Configuration/_
 
 Exercise
 * Understand plugins/L1uGMTAnalyzer.cc.
