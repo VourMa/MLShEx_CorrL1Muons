@@ -11,19 +11,21 @@
 * _scram b -j 4_
 * _cd MLShEx_CorrL1Muons/Configuration/_
 
-Exercise
-* Understand plugins/L1uGMTAnalyzer.cc.
-* Understand python/ana.py.
-* Run
-cd python
-cmsRun ana.py
-* Inspect outputL1uGMTAnalyzer.root.
+## Exercise
+* Understand _plugins/L1uGMTAnalyzer.cc_.
+* Understand _python/ana.py_.
+* Run  
+   _cd python_
+   _cmsRun ana.py_
+* Inspect _outputL1uGMTAnalyzer.root_.
 
-* Build ../plugins/L1uGMTAnalyzer.cc:
-After line:
-#include "DataFormats/L1Trigger/interface/Muon.h"
-add lines:
-#include "DataFormats/PatCandidates/interface/Muon.h”
+* **Build _../plugins/L1uGMTAnalyzer.cc_**:  
+   After line:
+   ```c++
+   #include "DataFormats/L1Trigger/interface/Muon.h"
+   ```
+   add lines:
+   #include "DataFormats/PatCandidates/interface/Muon.h”
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
