@@ -148,7 +148,7 @@
    _scram b -j 4_
    _cd MLShEx_CorrL1Muons/Configuration/python_
 
-* **Build _ana.py_**:
+* **Build _ana.py_**:  
    After line:
    ```c++
    CandTag = cms.InputTag( 'gmtStage2Digis','Muon' ),
@@ -172,7 +172,7 @@
 
 * Discussion on the TMVA.
 
-* **Build _../../plugins/L1uGMTAnalyzer.cc_**:
+* **Build _../../plugins/L1uGMTAnalyzer.cc_**:  
    After line:
    ```c++
    #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -272,7 +272,7 @@
    _scram b -j 4_
    _cd MLShEx_CorrL1Muons/Configuration/python_
 
-* **Build _ana.py_**:
+* **Build _ana.py_**:  
    After line:
    ```c++
    PVTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
@@ -296,7 +296,7 @@
    ),
    ```
 
-* **Build _../test/skimming/skimming.h_**:
+* **Build _../test/skimming/skimming.h_**:  
    After line:
    ```c++
    vector<float>   *recomuon_phi;
@@ -345,7 +345,7 @@
    fChain->SetBranchAddress("recomuon_phiAtSt2", &recomuon_phiAtSt2, &b_recomuon_phiAtSt2);
    ```
 
-* **Build _../test/skimming/skimming.C_**:
+* **Build _../test/skimming/skimming.C_**:  
    Replace line:
    ```c++
    float dr = DR( recomuon_eta->at(i),recomuon_phi->at(i),muon_eta->at(j),muon_phi->at(j) );
