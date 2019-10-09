@@ -15,7 +15,7 @@
 * Understand _plugins/L1uGMTAnalyzer.cc_.
 * Understand _python/ana.py_.
 * Run  
-   _cd python_
+   _cd python_  
    _cmsRun ana.py_
 * Inspect _outputL1uGMTAnalyzer.root_.
 
@@ -143,9 +143,9 @@
    events->Branch("recomuon_isTrackerMuon",&recomuon_isTrackerMuon);
    events->Branch("recomuon_isStandAloneMuon",&recomuon_isStandAloneMuon);
    ```
-* Run
-   _cd $CMSSW_BASE/src_
-   _scram b -j 4_
+* Run  
+   _cd $CMSSW_BASE/src_  
+   _scram b -j 4_  
    _cd MLShEx_CorrL1Muons/Configuration/python_
 
 * **Build _ana.py_**:  
@@ -158,15 +158,15 @@
    RecoTag = cms.InputTag( 'slimmedMuons' ),
    PVTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
    ```
-* Run
+* Run  
    _cmsRun ana.py_
 
 * Inspect _outputL1uGMTAnalyzer.root_.
 * Inspect _crabConfig.py_.
 
 * Understand _../test/skimming.py_, _../test/skimming.h_, _../test/skimming.C_.
-* Run
-   _cd ../test/skimming_
+* Run  
+   _cd ../test/skimming_  
    _python skimming.py_
 * Inspect _skimmedL1uGMTAnalyzer.root_.
 
@@ -267,9 +267,9 @@
    events->Branch("recomuon_etaAtSt2",&recomuon_etaAtSt2);
    events->Branch("recomuon_phiAtSt2",&recomuon_phiAtSt2);
    ```
-* Run
-   _cd $CMSSW_BASE/src_
-   _scram b -j 4_
+* Run  
+   _cd $CMSSW_BASE/src_  
+   _scram b -j 4_  
    _cd MLShEx_CorrL1Muons/Configuration/python_
 
 * **Build _ana.py_**:  
@@ -359,24 +359,24 @@
    ```
 
 * Understand _../TMVATraining/TMVATraining.py_, _../TMVATraining/TMVARegression.C_.
-* Run
-   _cd ../TMVATraining_
+* Run  
+   _cd ../TMVATraining_  
    _python TMVARegression.py_
 
 * Understand _../TMVATesting/Resolutions.py_, _../TMVATesting/Resolutions.h_, _../TMVATesting/Resolutions.C_.
 * Understand _../TMVATesting/MassSpectrum.py_, _../TMVATesting/MassSpectrum.h_, _../TMVATesting/MassSpectrum.C_.
 * **Change _trainingDir_ in _../TMVATesting/Resolutions.h_ and _../TMVATesting/MassSpectrum.h_**.
-* Run
-   _cd ../TMVATesting_
-   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF_
-   _python Resolutions.py --dataset Charmonium --year 2017 --era B_
+* Run  
+   _cd ../TMVATesting_  
+   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF_  
+   _python Resolutions.py --dataset Charmonium --year 2017 --era B_  
 
-   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_
-   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_
+   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_  
+   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_  
 * Understand _plotter.py_.
-* Run
-   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_
-   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root_
+* Run  
+   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_  
+   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root_  
 
-   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root_
-   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root_
+   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root_  
+   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root_  
