@@ -12,8 +12,8 @@
 * _cd MLShEx_CorrL1Muons/Configuration/_
 
 ## Exercise
-* Understand [_plugins/L1uGMTAnalyzer.cc_](../blob/exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
-* Understand [_python/ana.py_](../blob/exercise/Configuration/python/ana.py).
+* Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
+* Understand [_python/ana.py_](../exercise/Configuration/python/ana.py).
 * Run  
    _cd python_  
    _cmsRun ana.py_
@@ -162,9 +162,9 @@
    _cmsRun ana.py_
 
 * Inspect _outputL1uGMTAnalyzer.root_.
-* Inspect [_crabConfig.py_](../blob/exercise/Configuration/python/crabConfig.py).
+* Inspect [_crabConfig.py_](../exercise/Configuration/python/crabConfig.py).
 
-* Understand [_../test/skimming/skimming.py_](../blob/exercise/Configuration/test/skimming/skimming.py), [_../test/skimming/skimming.h_](../blob/exercise/Configuration/test/skimming/skimming.h), [_../test/skimming/skimming.C_](../blob/exercise/Configuration/test/skimming/skimming.C).
+* Understand [_../test/skimming/skimming.py_](../exercise/Configuration/test/skimming/skimming.py), [_../test/skimming/skimming.h_](../exercise/Configuration/test/skimming/skimming.h), [_../test/skimming/skimming.C_](../exercise/Configuration/test/skimming/skimming.C).
 * Run  
    _cd ../test/skimming_  
    _python skimming.py_
@@ -358,14 +358,14 @@
    else NotMatchedAtSt = true;
    ```
 
-* Understand [_../test/TMVATraining/TMVATraining.py_](../blob/exercise/Configuration/test/TMVATraining/TMVATraining.py), [_../test/TMVATraining/TMVARegression.C_](/blob/exercise/Configuration/test/TMVATraining/TMVARegression.C).
+* Understand [_../test/TMVATraining/TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_../test/TMVATraining/TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C).
 * Run  
    _cd ../test/TMVATraining_  
    _python TMVARegression.py_
 * Discuss on the results.
 
-* Understand [_../TMVATesting/Resolutions.py_](../blob/exercise/Configuration/test/TMVATesting/Resolutions.py), [_../TMVATesting/Resolutions.h_](../blob/exercise/Configuration/test/TMVATesting/Resolutions.h), [_../TMVATesting/Resolutions.C_](../blob/exercise/Configuration/test/TMVATesting/Resolutions.C).
-* Understand [_../TMVATesting/MassSpectrum.py_](../blob/exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_../TMVATesting/MassSpectrum.h_](../blob/exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_../TMVATesting/MassSpectrum.C_](../blob/exercise/Configuration/test/TMVATesting/MassSpectrum.C).
+* Understand [_../TMVATesting/Resolutions.py_](../exercise/Configuration/test/TMVATesting/Resolutions.py), [_../TMVATesting/Resolutions.h_](../exercise/Configuration/test/TMVATesting/Resolutions.h), [_../TMVATesting/Resolutions.C_](../exercise/Configuration/test/TMVATesting/Resolutions.C).
+* Understand [_../TMVATesting/MassSpectrum.py_](../exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_../TMVATesting/MassSpectrum.h_](../exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_../TMVATesting/MassSpectrum.C_](../exercise/Configuration/test/TMVATesting/MassSpectrum.C).
 * **Change _trainingDir_ in _../TMVATesting/Resolutions.h_ and _../TMVATesting/MassSpectrum.h_**.
 * Run  
    _cd ../TMVATesting_  
@@ -374,7 +374,7 @@
 
    _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_  
    _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_  
-* Understand [_../plotter.py_](../blob/exercise/Configuration/test/plotter/plotter.py).
+* Understand [_../plotter.py_](../exercise/Configuration/test/plotter/plotter.py).
 * Run  
    _cd ../plotter_  
    _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_  
