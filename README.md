@@ -12,7 +12,7 @@
 * _cd MLShEx_CorrL1Muons/Configuration/_
 
 ## Exercise
-* Understand _plugins/L1uGMTAnalyzer.cc_.
+* Understand [_plugins/L1uGMTAnalyzer.cc_](../blob/exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
 * Understand _python/ana.py_.
 * Run  
    _cd python_  
