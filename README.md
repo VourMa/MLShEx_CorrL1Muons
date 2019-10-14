@@ -15,6 +15,7 @@
 * Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
 * Understand [_python/ana.py_](../exercise/Configuration/python/ana.py).
 * Run  
+   _cd python_  
    _cmsRun ana.py_
 
 * Inspect _outputL1uGMTAnalyzer.root_.
