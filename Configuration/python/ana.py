@@ -5,7 +5,7 @@ from Configuration.StandardSequences.Eras import eras
 process = cms.Process( "Analysis",eras.Run2_2018 ) # For 2018 datasets
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 
 #Standard
@@ -30,6 +30,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.Ana = cms.EDAnalyzer('L1uGMTAnalyzer',
     saveTags = cms.bool( True ),
     CandTag = cms.InputTag( 'gmtStage2Digis','Muon' ),
+	RecoTag = cms.InputTag( 'slimmedMuons' ),
+	PVTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
 )
 
 process.source = cms.Source( "PoolSource",

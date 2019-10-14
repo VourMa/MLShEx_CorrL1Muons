@@ -22,6 +22,9 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/L1Trigger/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "TTree.h"
 
@@ -50,6 +53,10 @@ class L1uGMTAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 		
 		edm::InputTag                                candTag_;
 		edm::EDGetTokenT<l1t::MuonBxCollection>      candToken_;
+		edm::InputTag                                recoTag_;
+		edm::EDGetTokenT< std::vector<pat::Muon> >   recoToken_;
+		edm::InputTag                                PVTag_;
+		edm::EDGetTokenT<std::vector<reco::Vertex> > PV_token;
 		
 		edm::Service<TFileService> fs;
 		
@@ -74,12 +81,28 @@ class L1uGMTAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 		vector<float> muon_hwCharge;
 		vector<float> muon_hwChargeValid;
 		vector<float> muon_hwQual;
+
+		vector<float> recomuon_pt;
+		vector<float> recomuon_eta;
+		vector<float> recomuon_phi;
+		vector<float> recomuon_charge;
+		vector<bool> recomuon_isTight;
+		vector<bool> recomuon_isMedium;
+		vector<bool> recomuon_isLoose;
+		vector<bool> recomuon_isSoft;
+		vector<bool> recomuon_isGlobalMuon;
+		vector<bool> recomuon_isTrackerMuon;
+		vector<bool> recomuon_isStandAloneMuon;
 };
 
 // Constructor
 L1uGMTAnalyzer::L1uGMTAnalyzer(const edm::ParameterSet& iConfig) :
 candTag_( iConfig.getParameter<edm::InputTag>("CandTag") ),
-candToken_( consumes<l1t::MuonBxCollection>(candTag_)) {
+candToken_( consumes<l1t::MuonBxCollection>(candTag_)),
+recoTag_( iConfig.getParameter<edm::InputTag>("RecoTag") ),
+recoToken_( consumes< std::vector<pat::Muon> >(recoTag_)),
+PVTag_( iConfig.getParameter<edm::InputTag>("PVTag") ),
+PV_token( consumes<std::vector<reco::Vertex> > (PVTag_) ) {
     events = new TTree("events","events");
 }
 
@@ -92,6 +115,7 @@ void L1uGMTAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	using namespace std;
 	using namespace edm;
 	using namespace l1t;
+	using namespace reco;
 	
 	counter++;
 	
@@ -106,6 +130,8 @@ void L1uGMTAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	muon_pt.clear(); muon_eta.clear(); muon_etaAtVtx.clear(); muon_phi.clear(); muon_phiAtVtx.clear(); muon_charge.clear(); muon_tfMuonIndex.clear();
 
 	muon_hwPt.clear(); muon_hwEta.clear(); muon_hwEtaAtVtx.clear(); muon_hwPhi.clear(); muon_hwPhiAtVtx.clear(); muon_hwCharge.clear(); muon_hwChargeValid.clear(); muon_hwQual.clear();
+
+	recomuon_pt.clear(); recomuon_eta.clear(); recomuon_phi.clear(); recomuon_isTight.clear(); recomuon_isMedium.clear(); recomuon_isLoose.clear(); recomuon_isSoft.clear(); recomuon_isGlobalMuon.clear(); recomuon_isTrackerMuon.clear(); recomuon_isStandAloneMuon.clear();
 	
 	Handle<MuonBxCollection> L1Muons;
 	iEvent.getByToken(candToken_, L1Muons);
@@ -122,6 +148,32 @@ void L1uGMTAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		}
 	}
 	
+	edm::Handle<std::vector<Vertex> > theVertices;
+	iEvent.getByToken(PV_token,theVertices) ;
+
+	int nvertex = theVertices->size();
+	Vertex::Point PV(0,0,0);
+	reco::Vertex TheVertex;
+	if( nvertex) {
+		   PV = theVertices->begin()->position();
+		      TheVertex = * (theVertices->begin());
+	}
+	else {
+		   recomuon_pt.push_back(-99); recomuon_eta.push_back(-99); recomuon_phi.push_back(-99); recomuon_isTight.push_back(-99); recomuon_isMedium.push_back(-99); recomuon_isLoose.push_back(-99); recomuon_isSoft.push_back(-99); recomuon_isGlobalMuon.push_back(-99); recomuon_isTrackerMuon.push_back(-99); recomuon_isStandAloneMuon.push_back(-99);
+		      events->Fill();
+			     return;
+	}
+
+
+	Handle< vector<pat::Muon> > recoMuons;
+	iEvent.getByToken(recoToken_, recoMuons);
+
+	for( vector<pat::Muon>::const_iterator muon = (*recoMuons).begin(); muon != (*recoMuons).end(); muon++ ) {
+		   recomuon_pt.push_back(muon->pt()); recomuon_eta.push_back(muon->eta()); recomuon_phi.push_back(muon->phi());
+
+		      recomuon_isTight.push_back( muon->isTightMuon(TheVertex) ); recomuon_isMedium.push_back( muon->isMediumMuon() ); recomuon_isLoose.push_back( muon->isLooseMuon() ); recomuon_isSoft.push_back( muon->isSoftMuon(TheVertex) ); recomuon_isGlobalMuon.push_back( muon->isGlobalMuon() ); recomuon_isTrackerMuon.push_back( muon->isTrackerMuon() ); recomuon_isStandAloneMuon.push_back( muon->isStandAloneMuon() );
+	}
+
 	events->Fill();
 }
 
@@ -153,6 +205,17 @@ void L1uGMTAnalyzer::beginJob() {
 	events->Branch("muon_hwCharge",&muon_hwCharge);
 	events->Branch("muon_hwChargeValid",&muon_hwChargeValid);
 	events->Branch("muon_hwQual",&muon_hwQual);
+
+	events->Branch("recomuon_pt",&recomuon_pt);
+	events->Branch("recomuon_eta",&recomuon_eta);
+	events->Branch("recomuon_phi",&recomuon_phi);
+	events->Branch("recomuon_isTightMuon",&recomuon_isTight);
+	events->Branch("recomuon_isMediumMuon",&recomuon_isMedium);
+	events->Branch("recomuon_isLooseMuon",&recomuon_isLoose);
+	events->Branch("recomuon_isSoftMuon",&recomuon_isSoft);
+	events->Branch("recomuon_isGlobalMuon",&recomuon_isGlobalMuon);
+	events->Branch("recomuon_isTrackerMuon",&recomuon_isTrackerMuon);
+	events->Branch("recomuon_isStandAloneMuon",&recomuon_isStandAloneMuon);
 }
 
 // Method called once, just after ending the event loop  ------------
