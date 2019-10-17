@@ -2,34 +2,60 @@
 
 ## Setup
 * _cmsrel CMSSW_10_2_11_  
-   If there is an architecture problem, set SCRAM_ARCH=slc7_amd64_gcc700.
+   If there are only warnings, ignore them.  
+   If there is an architecture error, run _export SCRAM_ARCH=slc7_amd64_gcc700_.
 * _cd CMSSW_10_2_11/_
 * _cmsenv_
 * _git cms-init_
 * _cd src/_
-* _git clone git@github.com:VourMa/MLShEx_CorrL1Muons.git MLShEx_CorrL1Muons --single-branch --branch exercise_
+* _git clone https://github.com/VourMa/MLShEx_CorrL1Muons.git --single-branch --branch exercise_
 * _scram b -j 4_
 * _cd MLShEx_CorrL1Muons/Configuration/_
 
 ## Exercise
-* Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
-* Understand [_python/ana.py_](../exercise/Configuration/python/ana.py).
+* Introduction on the exercise: Goals and Methods.
+* Discussion on the analyzer.
 * Run  
    _cd python_  
    _cmsRun ana.py_
-
 * Inspect _outputL1uGMTAnalyzer.root_.
-* Inspect [_crabConfig.py_](../exercise/Configuration/python/crabConfig.py).
-
-* Understand [_../test/skimming/skimming.py_](../exercise/Configuration/test/skimming/skimming.py), [_../test/skimming/skimming.h_](../exercise/Configuration/test/skimming/skimming.h), [_../test/skimming/skimming.C_](../exercise/Configuration/test/skimming/skimming.C).
+* Discussion on the skimmer.
 * Run  
    _cd ../test/skimming_  
    _python skimming.py_
 * Inspect _skimmedL1uGMTAnalyzer.root_.
-
 * Discussion on the TMVA.
+* Run  
+   _cd ../test/TMVATraining_
+* Understand [_TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
+* Run  
+   _python TMVATraining.py_
+* Discussion on the results.
+* Run  
+   _cd ../TMVATesting_
+* **Change _trainingDir_ in _Resolutions.h_ and _MassSpectrum.h_**.
+* Run  
+   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF_  
+   _python Resolutions.py --dataset Charmonium --year 2017 --era B_  
 
-* **Build _../../plugins/L1uGMTAnalyzer.cc_**:  
+   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_  
+   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_  
+   
+   _cd ../plotter_  
+   
+   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_  
+   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root_  
+
+   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root_  
+   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root_  
+* Inspect the _.png_ files and discussion on the results.
+
+## Bonus (Understanding the code and implementing the reco muon propagation to the muon stations)
+* Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
+* Understand [_python/ana.py_](../exercise/Configuration/python/ana.py).
+* Inspect [_python/crabConfig.py_](../exercise/Configuration/python/crabConfig.py).
+* Understand [_test/skimming/skimming.py_](../exercise/Configuration/test/skimming/skimming.py), [_test/skimming/skimming.h_](../exercise/Configuration/test/skimming/skimming.h), [_test/skimming/skimming.C_](../exercise/Configuration/test/skimming/skimming.C).
+* **Build _plugins/L1uGMTAnalyzer.cc_** to include reco muon propagation to the muon stations:  
    After line:
    ```c++
    #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -124,12 +150,8 @@
    events->Branch("recomuon_etaAtSt2",&recomuon_etaAtSt2);
    events->Branch("recomuon_phiAtSt2",&recomuon_phiAtSt2);
    ```
-* Run  
-   _cd $CMSSW_BASE/src_  
-   _scram b -j 4_  
-   _cd MLShEx_CorrL1Muons/Configuration/python_
-
-* **Build _ana.py_**:  
+   
+* **Build _python/ana.py_**  to include reco muon propagation to the muon stations:  
    After line:
    ```c++
    PVTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
@@ -153,7 +175,7 @@
    ),
    ```
 
-* **Build _../test/skimming/skimming.h_**:  
+* **Build _test/skimming/skimming.h_** to do the matching at the muon stations:  
    After line:
    ```c++
    vector<float>   *recomuon_phi;
@@ -202,7 +224,7 @@
    fChain->SetBranchAddress("recomuon_phiAtSt2", &recomuon_phiAtSt2, &b_recomuon_phiAtSt2);
    ```
 
-* **Build _../test/skimming/skimming.C_**:  
+* **Build _test/skimming/skimming.C_** to do the matching at the muon stations:  
    Replace line:
    ```c++
    float dr = DR( recomuon_eta->at(i),recomuon_phi->at(i),muon_eta->at(j),muon_phi->at(j) );
@@ -214,28 +236,18 @@
    else if (recomuon_phiAtSt1->at(i) != -9999) dr = DR( recomuon_eta->at(i),recomuon_phiAtSt1->at(i),muon_eta->at(j),muon_phi->at(j) );
    else NotMatchedAtSt = true;
    ```
-
-* Understand [_../test/TMVATraining/TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_../test/TMVATraining/TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C).
 * Run  
-   _cd ../test/TMVATraining_  
-   _python TMVARegression.py_
-* Discuss on the results.
-
-* Understand [_../TMVATesting/Resolutions.py_](../exercise/Configuration/test/TMVATesting/Resolutions.py), [_../TMVATesting/Resolutions.h_](../exercise/Configuration/test/TMVATesting/Resolutions.h), [_../TMVATesting/Resolutions.C_](../exercise/Configuration/test/TMVATesting/Resolutions.C).
-* Understand [_../TMVATesting/MassSpectrum.py_](../exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_../TMVATesting/MassSpectrum.h_](../exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_../TMVATesting/MassSpectrum.C_](../exercise/Configuration/test/TMVATesting/MassSpectrum.C).
-* **Change _trainingDir_ in _../TMVATesting/Resolutions.h_ and _../TMVATesting/MassSpectrum.h_**.
+   _cd $CMSSW_BASE/src_  
+   _scram b -j 4_  
+   _cd MLShEx_CorrL1Muons/Configuration_
 * Run  
-   _cd ../TMVATesting_  
-   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF_  
-   _python Resolutions.py --dataset Charmonium --year 2017 --era B_  
-
-   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_  
-   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_  
-* Understand [_../plotter.py_](../exercise/Configuration/test/plotter/plotter.py).
+   _cd python_  
+   _cmsRun ana.py_
+* Inspect _outputL1uGMTAnalyzer.root_.
 * Run  
-   _cd ../plotter_  
-   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_  
-   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root_  
-
-   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root_  
-   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root_  
+   _cd ../test/skimming_  
+   _python skimming.py_
+* Inspect _skimmedL1uGMTAnalyzer.root_.
+* Understand [_test/TMVATesting/Resolutions.py_](../exercise/Configuration/test/TMVATesting/Resolutions.py), [_test/TMVATesting/Resolutions.h_](../exercise/Configuration/test/TMVATesting/Resolutions.h), [_test/TMVATesting/Resolutions.C_](../exercise/Configuration/test/TMVATesting/Resolutions.C).
+* Understand [_test/TMVATesting/MassSpectrum.py_](../exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_test/TMVATesting/MassSpectrum.h_](../exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_test/TMVATesting/MassSpectrum.C_](../exercise/Configuration/test/TMVATesting/MassSpectrum.C).
+* Understand [_plotter.py_](../exercise/Configuration/test/plotter/plotter.py).
