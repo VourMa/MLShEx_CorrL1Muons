@@ -2,177 +2,60 @@
 
 ## Setup
 * _cmsrel CMSSW_10_2_11_  
-   If there is an architecture problem, set SCRAM_ARCH=slc7_amd64_gcc700.
+   If there are only warnings, ignore them.  
+   If there is an architecture error, run _export SCRAM_ARCH=slc7_amd64_gcc700_.
 * _cd CMSSW_10_2_11/_
 * _cmsenv_
 * _git cms-init_
 * _cd src/_
-* _git clone git@github.com:VourMa/MLShEx_CorrL1Muons.git MLShEx_CorrL1Muons --single-branch --branch exercise_
+* _git clone https://github.com/VourMa/MLShEx_CorrL1Muons.git --single-branch --branch exercise_
 * _scram b -j 4_
 * _cd MLShEx_CorrL1Muons/Configuration/_
 
 ## Exercise
-* Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
-* Understand [_python/ana.py_](../exercise/Configuration/python/ana.py).
+* Introduction on the exercise: Goals and Methods.
+* Discussion on the analyzer.
 * Run  
    _cd python_  
    _cmsRun ana.py_
 * Inspect _outputL1uGMTAnalyzer.root_.
-
-* **Build _../plugins/L1uGMTAnalyzer.cc_**:  
-   After line:
-   ```c++
-   #include "DataFormats/L1Trigger/interface/Muon.h"
-   ```
-   add lines:
-   ```c++
-   #include "DataFormats/PatCandidates/interface/Muon.h”
-   
-   #include "DataFormats/VertexReco/interface/Vertex.h"
-   ```
-
-   After line:
-   ```c++
-   edm::EDGetTokenT<l1t::MuonBxCollection>      candToken_;
-   ```
-   add lines:
-   ```c++
-   edm::InputTag                                recoTag_;
-   edm::EDGetTokenT< std::vector<pat::Muon> >   recoToken_;
-   edm::InputTag                                PVTag_;
-   edm::EDGetTokenT<std::vector<reco::Vertex> > PV_token;
-   ```
-
-   After line:
-   ```c++
-   vector<float> muon_hwQual;
-   ```
-   add lines:
-   ```c++
-   vector<float> recomuon_pt;
-   vector<float> recomuon_eta;
-   vector<float> recomuon_phi;
-   vector<float> recomuon_charge;
-   vector<bool> recomuon_isTight;
-   vector<bool> recomuon_isMedium;
-   vector<bool> recomuon_isLoose;
-   vector<bool> recomuon_isSoft;
-   vector<bool> recomuon_isGlobalMuon;
-   vector<bool> recomuon_isTrackerMuon;
-   vector<bool> recomuon_isStandAloneMuon;
-   ```
-
-   Replace line:
-   ```c++
-   candToken_( consumes<l1t::MuonBxCollection>(candTag_)) {
-   ```
-   with lines:
-   ```c++
-   candToken_( consumes<l1t::MuonBxCollection>(candTag_)),
-   recoTag_( iConfig.getParameter<edm::InputTag>("RecoTag") ),
-   recoToken_( consumes< std::vector<pat::Muon> >(recoTag_)),
-   PVTag_( iConfig.getParameter<edm::InputTag>("PVTag") ),
-   PV_token( consumes<std::vector<reco::Vertex> > (PVTag_) ) {
-   ```
-
-   After line:
-   ```c++
-   using namespace l1t;
-   ```
-   add line:
-   ```c++
-   using namespace reco;
-   ```
-
-   After line:
-   ```c++
-   muon_hwPt.clear(); muon_hwEta.clear(); muon_hwEtaAtVtx.clear(); muon_hwPhi.clear(); muon_hwPhiAtVtx.clear(); muon_hwCharge.clear(); muon_hwChargeValid.clear(); muon_hwQual.clear();
-   ```
-   add line:
-   ```c++
-   recomuon_pt.clear(); recomuon_eta.clear(); recomuon_phi.clear(); recomuon_isTight.clear(); recomuon_isMedium.clear(); recomuon_isLoose.clear(); recomuon_isSoft.clear(); recomuon_isGlobalMuon.clear(); recomuon_isTrackerMuon.clear(); recomuon_isStandAloneMuon.clear();
-   ```
-
-   Before line:
-   ```c++
-   events->Fill();
-   ```
-   add lines:
-   ```c++
-   edm::Handle<std::vector<Vertex> > theVertices;
-   iEvent.getByToken(PV_token,theVertices) ;
-
-   int nvertex = theVertices->size();
-   Vertex::Point PV(0,0,0);
-   reco::Vertex TheVertex;
-   if( nvertex) {
-      PV = theVertices->begin()->position();
-      TheVertex = * (theVertices->begin());
-   }
-   else {
-      recomuon_pt.push_back(-99); recomuon_eta.push_back(-99); recomuon_phi.push_back(-99); recomuon_isTight.push_back(-99); recomuon_isMedium.push_back(-99); recomuon_isLoose.push_back(-99); recomuon_isSoft.push_back(-99); recomuon_isGlobalMuon.push_back(-99); recomuon_isTrackerMuon.push_back(-99); recomuon_isStandAloneMuon.push_back(-99);
-      events->Fill();
-      return;
-   }
-
-
-   Handle< vector<pat::Muon> > recoMuons;
-   iEvent.getByToken(recoToken_, recoMuons);
-
-   for( vector<pat::Muon>::const_iterator muon = (*recoMuons).begin(); muon != (*recoMuons).end(); muon++ ) {
-      recomuon_pt.push_back(muon->pt()); recomuon_eta.push_back(muon->eta()); recomuon_phi.push_back(muon->phi());
-
-      recomuon_isTight.push_back( muon->isTightMuon(TheVertex) ); recomuon_isMedium.push_back( muon->isMediumMuon() ); recomuon_isLoose.push_back( muon->isLooseMuon() ); recomuon_isSoft.push_back( muon->isSoftMuon(TheVertex) ); recomuon_isGlobalMuon.push_back( muon->isGlobalMuon() ); recomuon_isTrackerMuon.push_back( muon->isTrackerMuon() ); recomuon_isStandAloneMuon.push_back( muon->isStandAloneMuon() );
-   }
-   ```
-
-   After line:
-   ```c++
-   events->Branch("muon_hwQual",&muon_hwQual);
-   ```
-   add lines:
-   ```c++
-   events->Branch("recomuon_pt",&recomuon_pt);
-   events->Branch("recomuon_eta",&recomuon_eta);
-   events->Branch("recomuon_phi",&recomuon_phi);
-   events->Branch("recomuon_isTightMuon",&recomuon_isTight);
-   events->Branch("recomuon_isMediumMuon",&recomuon_isMedium);
-   events->Branch("recomuon_isLooseMuon",&recomuon_isLoose);
-   events->Branch("recomuon_isSoftMuon",&recomuon_isSoft);
-   events->Branch("recomuon_isGlobalMuon",&recomuon_isGlobalMuon);
-   events->Branch("recomuon_isTrackerMuon",&recomuon_isTrackerMuon);
-   events->Branch("recomuon_isStandAloneMuon",&recomuon_isStandAloneMuon);
-   ```
-* Run  
-   _cd $CMSSW_BASE/src_  
-   _scram b -j 4_  
-   _cd MLShEx_CorrL1Muons/Configuration/python_
-
-* **Build _ana.py_**:  
-   After line:
-   ```c++
-   CandTag = cms.InputTag( 'gmtStage2Digis','Muon' ),
-   ```
-   add lines:
-   ```c++
-   RecoTag = cms.InputTag( 'slimmedMuons' ),
-   PVTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
-   ```
-* Run  
-   _cmsRun ana.py_
-
-* Inspect _outputL1uGMTAnalyzer.root_.
-* Inspect [_crabConfig.py_](../exercise/Configuration/python/crabConfig.py).
-
-* Understand [_../test/skimming/skimming.py_](../exercise/Configuration/test/skimming/skimming.py), [_../test/skimming/skimming.h_](../exercise/Configuration/test/skimming/skimming.h), [_../test/skimming/skimming.C_](../exercise/Configuration/test/skimming/skimming.C).
+* Discussion on the skimmer.
 * Run  
    _cd ../test/skimming_  
    _python skimming.py_
 * Inspect _skimmedL1uGMTAnalyzer.root_.
-
 * Discussion on the TMVA.
+* Run  
+   _cd ../test/TMVATraining_
+* Understand [_TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
+* Run  
+   _python TMVATraining.py_
+* Discussion on the results.
+* Run  
+   _cd ../TMVATesting_
+* **Change _trainingDir_ in _Resolutions.h_ and _MassSpectrum.h_**.
+* Run  
+   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF_  
+   _python Resolutions.py --dataset Charmonium --year 2017 --era B_  
 
-* **Build _../../plugins/L1uGMTAnalyzer.cc_**:  
+   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_  
+   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_  
+   
+   _cd ../plotter_  
+   
+   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_  
+   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root_  
+
+   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root_  
+   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root_  
+* Inspect the _.png_ files and discussion on the results.
+
+## Bonus (Understanding the code and implementing the reco muon propagation to the muon stations)
+* Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
+* Understand [_python/ana.py_](../exercise/Configuration/python/ana.py).
+* Inspect [_python/crabConfig.py_](../exercise/Configuration/python/crabConfig.py).
+* Understand [_test/skimming/skimming.py_](../exercise/Configuration/test/skimming/skimming.py), [_test/skimming/skimming.h_](../exercise/Configuration/test/skimming/skimming.h), [_test/skimming/skimming.C_](../exercise/Configuration/test/skimming/skimming.C).
+* **Build _plugins/L1uGMTAnalyzer.cc_** to include reco muon propagation to the muon stations:  
    After line:
    ```c++
    #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -267,12 +150,8 @@
    events->Branch("recomuon_etaAtSt2",&recomuon_etaAtSt2);
    events->Branch("recomuon_phiAtSt2",&recomuon_phiAtSt2);
    ```
-* Run  
-   _cd $CMSSW_BASE/src_  
-   _scram b -j 4_  
-   _cd MLShEx_CorrL1Muons/Configuration/python_
-
-* **Build _ana.py_**:  
+   
+* **Build _python/ana.py_**  to include reco muon propagation to the muon stations:  
    After line:
    ```c++
    PVTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
@@ -296,7 +175,7 @@
    ),
    ```
 
-* **Build _../test/skimming/skimming.h_**:  
+* **Build _test/skimming/skimming.h_** to do the matching at the muon stations:  
    After line:
    ```c++
    vector<float>   *recomuon_phi;
@@ -345,7 +224,7 @@
    fChain->SetBranchAddress("recomuon_phiAtSt2", &recomuon_phiAtSt2, &b_recomuon_phiAtSt2);
    ```
 
-* **Build _../test/skimming/skimming.C_**:  
+* **Build _test/skimming/skimming.C_** to do the matching at the muon stations:  
    Replace line:
    ```c++
    float dr = DR( recomuon_eta->at(i),recomuon_phi->at(i),muon_eta->at(j),muon_phi->at(j) );
@@ -357,28 +236,18 @@
    else if (recomuon_phiAtSt1->at(i) != -9999) dr = DR( recomuon_eta->at(i),recomuon_phiAtSt1->at(i),muon_eta->at(j),muon_phi->at(j) );
    else NotMatchedAtSt = true;
    ```
-
-* Understand [_../test/TMVATraining/TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_../test/TMVATraining/TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C).
 * Run  
-   _cd ../test/TMVATraining_  
-   _python TMVARegression.py_
-* Discuss on the results.
-
-* Understand [_../TMVATesting/Resolutions.py_](../exercise/Configuration/test/TMVATesting/Resolutions.py), [_../TMVATesting/Resolutions.h_](../exercise/Configuration/test/TMVATesting/Resolutions.h), [_../TMVATesting/Resolutions.C_](../exercise/Configuration/test/TMVATesting/Resolutions.C).
-* Understand [_../TMVATesting/MassSpectrum.py_](../exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_../TMVATesting/MassSpectrum.h_](../exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_../TMVATesting/MassSpectrum.C_](../exercise/Configuration/test/TMVATesting/MassSpectrum.C).
-* **Change _trainingDir_ in _../TMVATesting/Resolutions.h_ and _../TMVATesting/MassSpectrum.h_**.
+   _cd $CMSSW_BASE/src_  
+   _scram b -j 4_  
+   _cd MLShEx_CorrL1Muons/Configuration_
 * Run  
-   _cd ../TMVATesting_  
-   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF_  
-   _python Resolutions.py --dataset Charmonium --year 2017 --era B_  
-
-   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_  
-   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_  
-* Understand [_../plotter.py_](../exercise/Configuration/test/plotter/plotter.py).
+   _cd python_  
+   _cmsRun ana.py_
+* Inspect _outputL1uGMTAnalyzer.root_.
 * Run  
-   _cd ../plotter_  
-   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_  
-   _python plotter.py --test Resolutions —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root_  
-
-   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root_  
-   _python plotter.py --test MassSpectrum —dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root_  
+   _cd ../test/skimming_  
+   _python skimming.py_
+* Inspect _skimmedL1uGMTAnalyzer.root_.
+* Understand [_test/TMVATesting/Resolutions.py_](../exercise/Configuration/test/TMVATesting/Resolutions.py), [_test/TMVATesting/Resolutions.h_](../exercise/Configuration/test/TMVATesting/Resolutions.h), [_test/TMVATesting/Resolutions.C_](../exercise/Configuration/test/TMVATesting/Resolutions.C).
+* Understand [_test/TMVATesting/MassSpectrum.py_](../exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_test/TMVATesting/MassSpectrum.h_](../exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_test/TMVATesting/MassSpectrum.C_](../exercise/Configuration/test/TMVATesting/MassSpectrum.C).
+* Understand [_plotter.py_](../exercise/Configuration/test/plotter/plotter.py).
