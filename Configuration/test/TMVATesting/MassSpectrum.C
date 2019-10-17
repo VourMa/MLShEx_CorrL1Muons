@@ -63,13 +63,13 @@ void MassSpectrum::correctThePhi(string readerTFTemp, string whichGuys, double &
 	PhiRecoReg = DPhi( L1muon_phi_,DphiL1Reco );
 }
 
-void MassSpectrum::Loop(TFile * out, string particle, TString whichGuys, TString etaOrIndex, bool debug)
+void MassSpectrum::Loop(TFile * out, string particle, TString whichGuys, TString etaOrIndex, Long64_t maxEvents)
 {
 	if (fChain == 0) return;
 	
 	Long64_t nentries = fChain->GetEntriesFast();
 	//cout << "Number of entries:" << nentries << endl;
-	if(debug) nentries = 1000;
+	nentries = maxEvents;
 	
 	out->cd();
 	

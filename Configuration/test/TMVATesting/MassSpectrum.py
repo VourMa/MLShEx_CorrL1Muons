@@ -7,6 +7,7 @@ parser = OptionParser()
 parser.add_option("--dataset", dest="datasetOpt", default=None, help="Choose dataset")
 parser.add_option("--year", dest="yearOpt", default=None, help="Choose year")
 parser.add_option("--era", dest="eraOpt", default=None, help="Choose eras, separated by commas")
+parser.add_option("--maxEvents", dest="maxEventsOpt", default=None, help="Set max number of events to process")
 options, args = parser.parse_args()
 
 CMSSW_BASE = os.environ['CMSSW_BASE']
@@ -15,7 +16,6 @@ IDOpt = "tight"
 TFBinMethodOpt = "Eta"
 performOnOpt = "A"
 particleOpt = "JPsi"
-debugOpt = False
 
 print "MVA Testing: Mass spectrum\n"
 ROOT.gROOT.ProcessLine(".L %s/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum.C+" % CMSSW_BASE)
@@ -31,7 +31,7 @@ if fileExists:
     print "Created output file: "+outFileName
 
     L = ROOT.MassSpectrum(inputChain)
-    L.Loop(outFile,particleOpt,performOnOpt,TFBinMethodOpt,debugOpt);
+    L.Loop(outFile,particleOpt,performOnOpt,TFBinMethodOpt,int(options.maxEventsOpt));
     outFile.Write();
     outFile.Close();
     print "Output file written and closed!\n"

@@ -70,7 +70,7 @@ public :
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    void correctThePhi(string readerTFTemp, string whichGuys, double & DphiL1Reco, double & PhiRecoReg);
-   virtual void     Loop(TFile * out, string particle, TString whichGuys, TString etaOrIndex, bool debug);
+   virtual void     Loop(TFile * out, string particle, TString whichGuys, TString etaOrIndex, Long64_t maxEvents);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };

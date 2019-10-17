@@ -102,13 +102,13 @@ void Resolutions::correctThePhi(string readerTFTemp, string whichGuys, double & 
 	PhiRecoReg = DPhi( L1muon_phi_,DphiL1Reco );
 }
 
-void Resolutions::Loop(TFile * out, TString whichGuys, TString performOnWhichGuys, TString etaOrIndex, bool debug)
+void Resolutions::Loop(TFile * out, TString whichGuys, TString performOnWhichGuys, TString etaOrIndex, Long64_t maxEvents)
 {
 	if (fChain == 0) return;
 	
 	Long64_t nentries = fChain->GetEntriesFast();
 	//cout << "Number of entries:" << nentries << endl;
-	if(debug) nentries = 100000;
+	nentries = maxEvents;
 	
 	out->cd();
 	
@@ -124,7 +124,7 @@ void Resolutions::Loop(TFile * out, TString whichGuys, TString performOnWhichGuy
 		
 		if( ientry % 1000000 == 0 ) cout << "I have processed " << ientry << " events!" << endl;
 		
-		for(int i = 0; i<L1muon_ptCorr->size(); i++) {
+		for(unsigned int i = 0; i<L1muon_ptCorr->size(); i++) {
 			//Cuts
 			if(recomuon_dr->at(i) < 0.0 || recomuon_dr->at(i) > 0.2) continue;
 			
