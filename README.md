@@ -35,19 +35,19 @@
    _cd ../TMVATesting_
 * **Change _trainingDir_ in _Resolutions.h_ and _MassSpectrum.h_**.
 * Run  
-   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF_  
-   _python Resolutions.py --dataset Charmonium --year 2017 --era B_  
+   _python Resolutions.py --dataset ZeroBias --year 2017 --era BCEF --maxEvents 100000000_  
+   _python Resolutions.py --dataset Charmonium --year 2017 --era BC --maxEvents 5000000_  
 
-   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF_  
-   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B_  
+   _python MassSpectrum.py --dataset ZeroBias --year 2017 --era BCEF --maxEvents 100000000_  
+   _python MassSpectrum.py --dataset Charmonium --year 2017 --era BC --maxEvents 5000000_  
    
    _cd ../plotter_  
    
-   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root_  
-   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root_  
+   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_BCEF_Eta_A_A.root --sample ZeroBias_  
+   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_BC_Eta_A_A.root --sample Charmonium_  
 
-   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root_  
-   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root_  
+   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_BCEF_JPsi_Eta.root --sample ZeroBias_  
+   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_BC_JPsi_Eta.root --sample Charmonium_  
 * Inspect the _.png_ files and discussion on the results.
 
 ## Bonus (Understanding the code and implementing the reco muon propagation to the muon stations)
