@@ -54,72 +54,24 @@ void GuysCut(TCut &mycut, TString guys) {
 }
 
 
-class LoadFiles {
-	private:
-	static const int NEras = 6;
-	TString eras[NEras] = {"A","B","C","D","E","F"};
-	TString dataset, year, ID;
-	TString NTupleDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/";
-	vector<TFile *> InitializedFiles;
-	vector<TTree *> regTree; 
-	
-	TFile * InitializeFile(TString era);
-	void DataLoadFiles(vector<TFile *> Files, TMVA::DataLoader * dataloader);
-	
-	public:
-	LoadFiles(TString _dataset, TString _year, TString _ID);
-	void FilesInReg(TString fileEras, bool useTotalEras, TMVA::DataLoader * dataloader);
-};
-
-LoadFiles::LoadFiles(TString _dataset, TString _year, TString _ID) {
-	dataset = _dataset;
-	year = _year;
-	ID = _ID;
-}
-
-void LoadFiles::FilesInReg(TString fileEras, bool useTotalEras, TMVA::DataLoader * dataloader) {
-	if(useTotalEras) {
-		if( InitializeFile( fileEras ) != NULL ) InitializedFiles.push_back( InitializeFile( fileEras ) );
-	}
-	else {
-		for(int i = 0; i < NEras; i++) {
-			if( fileEras.Contains( eras[i] ) ) {
-				if( InitializeFile( eras[i] ) != NULL ) InitializedFiles.push_back( InitializeFile( eras[i] ) );
-			}
-		}
-	}
-	DataLoadFiles(InitializedFiles, dataloader);
-}
-
-TFile * LoadFiles::InitializeFile(TString era) {
+TFile * InitializeFile(TString dataset, TString year, TString ID, TString fileEras) {
 	TFile *input(0);
-	TString fname = NTupleDir+"L1toRecoMatchPlots_"+dataset+year+"_"+ID+"_"+era+".root";
+	TString NTupleDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/";
+	TString fname = NTupleDir+"L1toRecoMatchPlots_"+dataset+year+"_"+ID+"_"+fileEras+".root";
 	if (!gSystem->AccessPathName( fname )) {
 		input = TFile::Open( fname );
-		//cout << "--- TMVARegression           : Using input file: " << input->GetName() << endl;
 	}
 	if (!input) {
-		cout << "ERROR: could not open data file " << era << endl;
+		cout << "ERROR: could not open data file " << fileEras << endl;
 		input = NULL;
 	}
-	
 	return input;
-}
-
-void LoadFiles::DataLoadFiles(vector<TFile *> Files, TMVA::DataLoader * dataloader) {
-	regTree.clear();
-	for(int i = 0; i < Files.size(); i++) {
-		regTree.push_back( (TTree*)Files.at(i)->Get("mytree") );
-		dataloader->AddRegressionTree( regTree.at(i) );
-		cout << "--- TMVARegression           : Using input file: " << Files.at(i)->GetName() << endl;
-	}
-	return;
 }
 
 
 using namespace TMVA;
 
-void TMVARegression( TString dataset, TString year, TString ID, TString TF, TString fileEras, bool useTotalEras, TString guys, TString extraText, TString etaOrIndex)
+void TMVARegression( TString dataset, TString year, TString ID, TString TF, TString fileEras, TString guys, TString extraText, TString etaOrIndex)
 {
 	Tools::Instance();
 	
@@ -144,8 +96,13 @@ void TMVARegression( TString dataset, TString year, TString ID, TString TF, TStr
 	
 	dataloader->AddTarget( "deltaPhi(L1muon_phiAtVtx,recomuon_phi)" );
 	
-	
-	LoadFiles TMVAInputFiles(dataset,year,ID); TMVAInputFiles.FilesInReg(fileEras,useTotalEras,dataloader);
+	TFile * inputFile = InitializeFile(dataset,year,ID,fileEras);
+	TTree * inputTree;
+	if( inputFile != NULL ) {
+		inputTree =  (TTree*)inputFile->Get("mytree");
+		dataloader->AddRegressionTree( inputTree );
+	}
+	else return;
 	
 	
 	TCut mycut = " recomuon_dr >= 0.0 && recomuon_dr < 0.2 ";
@@ -154,10 +111,7 @@ void TMVARegression( TString dataset, TString year, TString ID, TString TF, TStr
 	cout << mycut << endl;
 	
 	
-	TString preparationString;
-	if(TF == "E") preparationString = "nTrain_Regression=250000:nTest_Regression=250000:SplitMode=Random:NormMode=NumEvents:!V";
-	else if(TF == "E" && guys == "G") preparationString = "nTrain_Regression=50000:nTest_Regression=50000:SplitMode=Random:NormMode=NumEvents:!V";
-	else preparationString = "SplitMode=Random:NormMode=NumEvents:!V";
+	TString preparationString = "nTrain_Regression=25000:nTest_Regression=25000:SplitMode=Random:NormMode=NumEvents:!V";
 	dataloader->PrepareTrainingAndTestTree( mycut, preparationString );
 	
 	
@@ -176,5 +130,5 @@ void TMVARegression( TString dataset, TString year, TString ID, TString TF, TStr
 	delete factory;
 	delete dataloader;
 	
-	if (!gROOT->IsBatch()) TMVA::TMVARegGui( outfileName+".root" );
+	return;
 }
