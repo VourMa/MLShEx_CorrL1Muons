@@ -53,6 +53,7 @@ public :
    TMVA::Reader* reader[3] = {};
    
    TString trainingDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/TMVATrainingFiles/"; //Change accordingly
+   TString era = "BCEF";
    float L1muon_ptCorr_, L1muon_pt_, L1muon_eta_,L1muon_phi_, L1muon_charge_, L1muon_index_;
 
    Resolutions(TTree *tree=0, TString etaOrIndex = "Eta");
@@ -84,7 +85,7 @@ Resolutions::Resolutions(TTree *tree, TString etaOrIndex) : fChain(0)
          reader[3*j+i]->AddVariable("L1muon_phiAtVtx", &L1muon_phi_);
          reader[3*j+i]->AddVariable("L1muon_charge", &L1muon_charge_);
          
-         reader[3*j+i]->BookMVA("MLP", trainingDir+"TMVARegression_TF"+readerTF[i]+"_EraBCEF_Guys"+readerpT[j]+"_"+etaOrIndex+"/weights/TMVARegression_MLP.weights.xml");
+         reader[3*j+i]->BookMVA("MLP", trainingDir+"TMVARegression_TF"+readerTF[i]+"_Era"+era+"_Guys"+readerpT[j]+"_"+etaOrIndex+"/weights/TMVARegression_MLP.weights.xml");
          
          readerMap.insert(pair<string,TMVA::Reader *> (key, reader[3*j+i]) );
       }

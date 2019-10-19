@@ -115,7 +115,7 @@ void TMVARegression( TString dataset, TString year, TString ID, TString TF, TStr
 	dataloader->PrepareTrainingAndTestTree( mycut, preparationString );
 	
 	
-	factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+20:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15" );
+	factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=300:HiddenLayers=N+20:TestRate=6:TrainingMethod=BFGS:Sampling=0.6:SamplingEpoch=0.8:ConvergenceImprove=1e-4:ConvergenceTests=15" );
 	
 	factory->TrainAllMethods();
 	factory->TestAllMethods();

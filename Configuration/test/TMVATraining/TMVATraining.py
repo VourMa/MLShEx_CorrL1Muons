@@ -4,10 +4,10 @@ import sys
 
 CMSSW_BASE = os.environ['CMSSW_BASE']
 datasetOpt = "ZeroBias"
-yearOpt = "2018"
+yearOpt = "2017"
 IDOpt = "tight"
 TFOpt = "B,O,E"
-totalErasOpt = "ABC"
+totalErasOpt = "B"
 guysOpt = "A"
 extraTextOpt = ""
 TFBinMethodOpt = "Eta"
@@ -19,5 +19,5 @@ for TF in TFs:
         print ".x {CMSSW_BASE}/src/MLShEx_CorrL1Muons/Configuration/test/TMVATraining/TMVARegression.C(\"{datasetArg}\",\"{yearArg}\",\"{IDArg}\",\"{TFArg}\",\"{erasArg}\",\"{guyArg}\",\"{extraTextArg}\",\"{etaOrIndexArg}\")".format(CMSSW_BASE=CMSSW_BASE, datasetArg=datasetOpt, yearArg=yearOpt, IDArg=IDOpt, TFArg=TF, erasArg=totalErasOpt, guyArg=guy, extraTextArg=extraTextOpt, etaOrIndexArg=TFBinMethodOpt)
         ROOT.gROOT.ProcessLine(".x {CMSSW_BASE}/src/MLShEx_CorrL1Muons/Configuration/test/TMVATraining/TMVARegression.C(\"{datasetArg}\",\"{yearArg}\",\"{IDArg}\",\"{TFArg}\",\"{erasArg}\",\"{guyArg}\",\"{extraTextArg}\",\"{etaOrIndexArg}\")".format(CMSSW_BASE=CMSSW_BASE, datasetArg=datasetOpt, yearArg=yearOpt, IDArg=IDOpt, TFArg=TF, erasArg=totalErasOpt, guyArg=guy, extraTextArg=extraTextOpt, etaOrIndexArg=TFBinMethodOpt))
 
-ROOT.TMVA.TMVARegGui("TMVARegression_TFB_EraABC_GuysA_Eta.root")
+ROOT.TMVA.TMVARegGui("TMVARegression_TFB_Era"+totalErasOpt+"_Guys"+guysOpt+"_"+TFBinMethodOpt+".root")
 raw_input("Press Enter to continue...")
