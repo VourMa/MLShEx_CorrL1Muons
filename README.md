@@ -26,15 +26,12 @@
 * Inspect _skimmedL1uGMTAnalyzer.root_.
 * Discussion on the TMVA.
 * Run  
-   _cd ../test/TMVATraining_
+   _cd ../test/TMVATraining_  
+   _python TMVATraining.py_
 * Understand [_TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
 * Run  
-   _python TMVATraining.py_
-* Discussion on the results.
-* Run  
-   _cd ../TMVATesting_
-* **Change _trainingDir_ in _Resolutions.h_ and _MassSpectrum.h_**.
-* Run  
+   _cd ../TMVATesting_  
+   
    _python Resolutions.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000_  
    _python Resolutions.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000_  
 
@@ -48,7 +45,9 @@
 
    _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_ABC_JPsi_Eta.root --sample ZeroBias_  
    _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root --sample Charmonium_  
+* Discussion on the results.
 * Inspect the _.png_ files and discussion on the results.
+* **Change _trainingDir_ and _era_ in _Resolutions.h_ and _MassSpectrum.h_** and repeat the testing commands to test your training!
 
 ## Bonus (Understanding the code and implementing the reco muon propagation to the muon stations)
 * Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
