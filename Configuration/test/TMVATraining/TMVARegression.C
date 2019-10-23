@@ -61,10 +61,7 @@ TFile * InitializeFile(TString dataset, TString year, TString ID, TString fileEr
 	if (!gSystem->AccessPathName( fname )) {
 		input = TFile::Open( fname );
 	}
-	if (!input) {
-		cout << "ERROR: could not open data file " << fileEras << endl;
-		input = NULL;
-	}
+	if (!input) cout << "ERROR: could not open data file " << fileEras << endl;
 	return input;
 }
 
@@ -87,7 +84,7 @@ void TMVARegression( TString dataset, TString year, TString ID, TString TF, TStr
 	
 	TMVA::Factory *factory = new TMVA::Factory( "TMVARegression", outputFile,"!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression" );
 	
-	TMVA::DataLoader *dataloader=new TMVA::DataLoader(dataloaderName);
+	TMVA::DataLoader *dataloader = new TMVA::DataLoader(dataloaderName);
 	
 	dataloader->AddVariable( "L1muon_ptCorr", "p_{T,corrected}(L1 #mu)", "GeV", 'F' );
 	dataloader->AddVariable( "L1muon_eta", "#eta(L1 #mu)", "", 'F' );

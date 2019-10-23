@@ -5,7 +5,7 @@ from Configuration.StandardSequences.Eras import eras
 process = cms.Process( "Analysis",eras.Run2_2018 ) # For 2018 datasets
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20000) )
 
 
 #Standard
