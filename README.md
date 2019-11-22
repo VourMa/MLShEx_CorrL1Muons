@@ -1,6 +1,9 @@
 # CMS Data Analysis School (DAS) 2019, Beijing - Machine Learning Short Exercise: Using NN to Correct L1 Muons
 
 ## Setup
+* Connect to the CMSDAS server:  
+   _ssh -Y -p 9001 USERNAME@hepfarm02.phy.pku.edu.cn_  
+* _source /cvmfs/cms.cern.ch/cmsset_default.sh_  
 * _cmsrel CMSSW_10_2_11_  
    If there are only warnings, ignore them.  
    If there is an architecture error, run _export SCRAM_ARCH=slc7_amd64_gcc700_.
@@ -8,7 +11,7 @@
 * _cmsenv_
 * _git cms-init_
 * _cd src/_
-* _git clone https://github.com/VourMa/MLShEx_CorrL1Muons.git --single-branch --branch exercise_
+* _git clone https://github.com/VourMa/MLShEx_CorrL1Muons.git --single-branch --branch exercise_CMSDASServer_
 * _scram b -j 4_
 * _cd MLShEx_CorrL1Muons/Configuration/_
 
@@ -29,6 +32,13 @@
    _cd ../test/TMVATraining_  
    _python TMVATraining.py_
 * Understand [_TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
+* If one wants to inspect the .root produced the TMVA, one can run ROOT with:  
+   _root -l_  
+   
+   And then run the GUI with:  
+   _TMVA::TMVARegGui("FILENAME")_  
+   
+   Where FILENAME can be _TMVARegression_TFB_EraB_GuysA_Eta.root_, _TMVARegression_TFO_EraB_GuysA_Eta.root_ or _TMVARegression_TFE_EraB_GuysA_Eta.root_.
 * Run  
    _cd ../TMVATesting_  
    
