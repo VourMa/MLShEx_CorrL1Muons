@@ -26,7 +26,7 @@ if fileExists:
     inputChain.Add(inputFileName)
     print "Got file with",inputChain.GetEntries(),"entries\n"
 
-    outFileName = "./MassSpectrum_"+options.datasetOpt+"_"+options.eraOpt+"_"+particleOpt+"_"+TFBinMethodOpt+".root"
+    outFileName = "%s/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_" % CMSSW_BASE+options.datasetOpt+"_"+options.eraOpt+"_"+particleOpt+"_"+TFBinMethodOpt+".root"
     outFile = ROOT.TFile(outFileName,"recreate")
     print "Created output file: "+outFileName
 

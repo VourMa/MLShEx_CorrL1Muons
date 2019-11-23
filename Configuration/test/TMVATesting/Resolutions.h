@@ -16,6 +16,7 @@
 #include "TMVA/Tools.h"
 #include "TMVA/TMVAGui.h"
 #include "TMVA/Reader.h"
+#include "TMVA/PyMethodBase.h"
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -52,8 +53,13 @@ public :
    unordered_map<string,TMVA::Reader *> readerMap;
    TMVA::Reader* reader[3] = {};
    
+<<<<<<< HEAD
    TString trainingDir = "/home/cmsdas/public/store/MLShortExercise/TMVATrainingFiles/"; //Change accordingly
    TString era = "BCEF";
+=======
+   TString trainingDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/TMVATrainingFiles/"; //Change accordingly
+   TString era = "BCEF"; //Change accordingly
+>>>>>>> 5aaa8d3... Modifications to main scripts to accommodate the bonus exercise
    float L1muon_ptCorr_, L1muon_pt_, L1muon_eta_,L1muon_phi_, L1muon_charge_, L1muon_index_;
 
    Resolutions(TTree *tree=0, TString etaOrIndex = "Eta");

@@ -26,7 +26,7 @@ if fileExists:
     inputChain.Add(inputFileName)
     print "Got file with",inputChain.GetEntries(),"entries\n"
 
-    outFileName = "./Resolutions_"+options.datasetOpt+"_"+options.eraOpt+"_"+TFBinMethodOpt+"_"+guysOpt+"_"+performOnOpt+".root"
+    outFileName = "%s/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_" % CMSSW_BASE+options.datasetOpt+"_"+options.eraOpt+"_"+TFBinMethodOpt+"_"+guysOpt+"_"+performOnOpt+".root"
     outFile = ROOT.TFile(outFileName,"recreate")
     print "Created output file: "+outFileName
 

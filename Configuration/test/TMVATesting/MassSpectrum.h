@@ -16,6 +16,7 @@
 #include "TMVA/Tools.h"
 #include "TMVA/TMVAGui.h"
 #include "TMVA/Reader.h"
+#include "TMVA/PyMethodBase.h"
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -60,7 +61,12 @@ public :
    unordered_map<string,TMVA::Reader *> readerMap;
    TMVA::Reader* reader[3] = {};
    
+<<<<<<< HEAD
    TString trainingDir = "/home/cmsdas/public/store/MLShortExercise/TMVATrainingFiles/"; // Change accordingly
+=======
+   TString trainingDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/TMVATrainingFiles/"; // Change accordingly
+   TString era = "BCEF"; //Change accordingly
+>>>>>>> 5aaa8d3... Modifications to main scripts to accommodate the bonus exercise
    float L1muon_ptCorr_, L1muon_pt_, L1muon_eta_,L1muon_phi_, L1muon_charge_, L1muon_index_;
 
    MassSpectrum(TTree *tree=0, TString etaOrIndex = "Eta");
@@ -82,8 +88,8 @@ MassSpectrum::MassSpectrum(TTree *tree, TString etaOrIndex) : fChain(0)
 {
    Init(tree);
    
-   for( int i = 0; i < 3; i++) {
-      for( int j = 0; j < 1; j++) {
+   for(int i = 0; i < 3; i++) {
+      for(int j = 0; j < 1; j++) {
          string key = readerTF[i]; key.append("MTF_"); key.append(readerpT[j]);
          reader[3*j+i] = new TMVA::Reader();
          
@@ -92,7 +98,7 @@ MassSpectrum::MassSpectrum(TTree *tree, TString etaOrIndex) : fChain(0)
          reader[3*j+i]->AddVariable("L1muon_phiAtVtx", &L1muon_phi_);
          reader[3*j+i]->AddVariable("L1muon_charge", &L1muon_charge_);
          
-         reader[3*j+i]->BookMVA("MLP", trainingDir+"TMVARegression_TF"+readerTF[i]+"_EraBCEF_Guys"+readerpT[j]+"_"+etaOrIndex+"/weights/TMVARegression_MLP.weights.xml");
+         reader[3*j+i]->BookMVA("MLP", trainingDir+"TMVARegression_TF"+readerTF[i]+"_Era"+era+"_Guys"+readerpT[j]+"_"+etaOrIndex+"/weights/TMVARegression_MLP.weights.xml");
          
          readerMap.insert(pair<string,TMVA::Reader *> (key, reader[3*j+i]) );
       }
