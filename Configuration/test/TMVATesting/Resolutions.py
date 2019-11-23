@@ -11,7 +11,7 @@ parser.add_option("--maxEvents", dest="maxEventsOpt", default=None, help="Set ma
 options, args = parser.parse_args()
 
 CMSSW_BASE = os.environ['CMSSW_BASE']
-inDirOpt = "/eos/cms/store/cmst3/user/evourlio/"
+inDirOpt = "/home/cmsdas/public/store/MLShortExercise/"
 IDOpt = "tight"
 TFBinMethodOpt = "Eta"
 guysOpt = "A"
@@ -19,7 +19,7 @@ performOnOpt = "A"
 
 print "MVA Testing: Resolution\n"
 ROOT.gROOT.ProcessLine(".L %s/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions.C+" % CMSSW_BASE)
-inputFileName = inDirOpt+"L1uGMTAnalyzer_Trees/L1toRecoMatchPlots_"+options.datasetOpt+options.yearOpt+"_"+IDOpt+"_"+options.eraOpt +".root"
+inputFileName = inDirOpt+"L1toRecoMatchPlots_"+options.datasetOpt+options.yearOpt+"_"+IDOpt+"_"+options.eraOpt +".root"
 fileExists = os.path.isfile(inputFileName)
 if fileExists:
     inputChain = ROOT.TChain("mytree")

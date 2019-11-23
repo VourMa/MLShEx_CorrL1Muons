@@ -70,7 +70,7 @@ void skimming::Loop(TString ID,TString out, bool debug, bool onlytxt)
 	if( debug == 1 ) nentries = 100000;
 	
 	//___Get the profile histograms___
-	TFile profFile("/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/plots_tight_test_profile.root","read");
+	TFile profFile("/home/cmsdas/public/store/MLShortExercise/L1uGMTAnalyzer_Trees/plots_tight_test_profile.root","read");
 	TProfile AllTF, BMTF, OMTF, EMTF;
 	getProf(profFile, "pt_rat_vs_L1muon_pt_pfx", AllTF, "pt_rat_vs_L1muon_pt_BMTF_pfx", BMTF, "pt_rat_vs_L1muon_pt_OMTF_pfx", OMTF, "pt_rat_vs_L1muon_pt_EMTF_pfx", EMTF);
 	profFile.Close();

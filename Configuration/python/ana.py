@@ -36,7 +36,8 @@ process.Ana = cms.EDAnalyzer('L1uGMTAnalyzer',
 
 process.source = cms.Source( "PoolSource",
     fileNames = cms.untracked.vstring(
-        'root://xrootd-cms.infn.it//store/data/Run2018C/ZeroBias/MINIAOD/17Sep2018-v1/80000/EAB199EB-692F-8042-BFC4-C1F42CF7FFE8.root', # MINIAOD 2018
+		#'root://xrootd-cms.infn.it//store/data/Run2018C/ZeroBias/MINIAOD/17Sep2018-v1/80000/EAB199EB-692F-8042-BFC4-C1F42CF7FFE8.root',
+        'file:/home/cmsdas/public/store/data/Run2018C/ZeroBias/MINIAOD/17Sep2018-v1/80000/EAB199EB-692F-8042-BFC4-C1F42CF7FFE8.root', # MINIAOD 2018
     ),
     inputCommands = cms.untracked.vstring(
         'keep *'

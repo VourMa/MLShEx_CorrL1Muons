@@ -51,7 +51,7 @@ void GuysCut(TCut &mycut, TString guys) {
 
 TFile * InitializeFile(TString dataset, TString year, TString ID, TString fileEras) {
 	TFile *input(0);
-	TString NTupleDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/";
+	TString NTupleDir = "/home/cmsdas/public/store/MLShortExercise/";
 	TString fname = NTupleDir+"L1toRecoMatchPlots_"+dataset+year+"_"+ID+"_"+fileEras+".root";
 	if (!gSystem->AccessPathName( fname )) {
 		input = TFile::Open( fname );
