@@ -1,52 +1,59 @@
 # CMS Data Analysis School (DAS) 2019, Beijing - Machine Learning Short Exercise: Using NN to Correct L1 Muons
 
 ## Setup
-* _cmsrel CMSSW_10_2_11_  
-   If there are only warnings, ignore them.  
-   If there is an architecture error, run _export SCRAM_ARCH=slc7_amd64_gcc700_.
-* _cd CMSSW_10_2_11/_
-* _cmsenv_
-* _git cms-init_
-* _cd src/_
-* _git clone https://github.com/VourMa/MLShEx_CorrL1Muons.git --single-branch --branch exercise_
-* _scram b -j 4_
-* _cd MLShEx_CorrL1Muons/Configuration/_
+```
+cmsrel CMSSW_10_2_11_
+cd CMSSW_10_2_11/
+cmsenv
+git cms-init
+cd src/
+git clone https://github.com/VourMa/MLShEx_CorrL1Muons.git --single-branch --branch exercise
+scram b -j 4
+cd MLShEx_CorrL1Muons/Configuration/
+```
 
 ## Exercise
 * Introduction on the exercise: Goals and Methods.
 * Discussion on the analyzer.
 * Run  
-   _cd python_  
-   _cmsRun ana.py_
+   ```
+   cd python  
+   cmsRun ana.py
+   ```
 * Inspect _outputL1uGMTAnalyzer.root_.
 * Discussion on the skimmer.
 * Run  
-   _cd ../test/skimming_  
-   _python skimming.py_
+   ```
+   cd ../test/skimming  
+   python skimming.py
+   ```
 * Inspect _skimmedL1uGMTAnalyzer.root_.
 * Discussion on the TMVA.
 * Run  
-   _cd ../test/TMVATraining_  
-   _python TMVATraining.py_
+   ```
+   cd ../test/TMVATraining  
+   python TMVATraining.py
+   ```
 * Understand [_TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
 * Run  
-   _cd ../TMVATesting_  
+   ```
+   cd ../TMVATesting  
    
-   _python Resolutions.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000_  
-   _python Resolutions.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000_  
+   python Resolutions.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
+   python Resolutions.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000  
 
-   _python MassSpectrum.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000_  
-   _python MassSpectrum.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000_  
+   python MassSpectrum.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
+   python MassSpectrum.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000  
    
-   _cd ../plotter_  
+   cd ../plotter  
    
-   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_ABC_Eta_A_A.root --sample ZeroBias_  
-   _python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root --sample Charmonium_  
+   python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_ZeroBias_ABC_Eta_A_A.root --sample ZeroBias  
+   python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/Resolutions_Charmonium_B_Eta_A_A.root --sample Charmonium  
 
-   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_ABC_JPsi_Eta.root --sample ZeroBias_  
-   _python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root --sample Charmonium_  
-* Discussion on the results.
-* Inspect the _.png_ files and discussion on the results.
+   python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_ZeroBias_ABC_JPsi_Eta.root --sample ZeroBias  
+   python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/MassSpectrum_Charmonium_B_JPsi_Eta.root --sample Charmonium
+   ```
+* Inspect the _.png_ files with `eog` and discussion on the results.
 * **Change _trainingDir_ and _era_ in _Resolutions.h_ and _MassSpectrum.h_** and repeat the testing commands to test your training!
 
 ## Bonus (Understanding the code and implementing the reco muon propagation to the muon stations)
@@ -236,16 +243,22 @@
    else NotMatchedAtSt = true;
    ```
 * Run  
-   _cd $CMSSW_BASE/src_  
-   _scram b -j 4_  
-   _cd MLShEx_CorrL1Muons/Configuration_
+   ```
+   cd $CMSSW_BASE/src  
+   scram b -j 4  
+   cd MLShEx_CorrL1Muons/Configuration
+   ```
 * Run  
-   _cd python_  
-   _cmsRun ana.py_
+   ```
+   cd python  
+   cmsRun ana.py
+   ```
 * Inspect _outputL1uGMTAnalyzer.root_.
 * Run  
-   _cd ../test/skimming_  
-   _python skimming.py_
+   ```
+   cd ../test/skimming  
+   python skimming.py
+   ```
 * Inspect _skimmedL1uGMTAnalyzer.root_.
 * Understand [_test/TMVATesting/Resolutions.py_](../exercise/Configuration/test/TMVATesting/Resolutions.py), [_test/TMVATesting/Resolutions.h_](../exercise/Configuration/test/TMVATesting/Resolutions.h), [_test/TMVATesting/Resolutions.C_](../exercise/Configuration/test/TMVATesting/Resolutions.C).
 * Understand [_test/TMVATesting/MassSpectrum.py_](../exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_test/TMVATesting/MassSpectrum.h_](../exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_test/TMVATesting/MassSpectrum.C_](../exercise/Configuration/test/TMVATesting/MassSpectrum.C).
