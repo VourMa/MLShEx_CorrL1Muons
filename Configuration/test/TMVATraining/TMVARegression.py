@@ -5,7 +5,7 @@ from ROOT import TMVA, TFile, TTree, TCut, TChain, gROOT
 from keras.models import Sequential
 from keras.layers.core import Dense,Reshape,Flatten
 from keras.layers.convolutional import Conv1D
-from keras.optimizers import Adam,SGD
+from keras.optimizers import Adam,SGD,RMSprop
 
 TMVA.PyMethodBase.PyInitialize()
 
@@ -53,6 +53,7 @@ parser.add_argument("--fileEras", default="B")
 parser.add_argument("--guys", default="A")
 parser.add_argument("--extraText", default="_Bonus")
 parser.add_argument("--etaOrIndex", default="Eta")
+parser.add_argument("--model", default="1LMedium")
 args = parser.parse_args()
 
 
@@ -62,7 +63,7 @@ print "==> Start TMVARegression"
 gROOT.ProcessLine(".L deltaPhi.h+")
 
 CMSSW_BASE = os.environ["CMSSW_BASE"]
-dataloaderName = "TMVARegression_TF"+args.TF+"_Era"+args.fileEras+"_Guys"+args.guys+"_"+args.etaOrIndex+args.extraText
+dataloaderName = "TMVARegression_TF"+args.TF+"_Era"+args.fileEras+"_Guys"+args.guys+"_"+args.model+"_"+args.etaOrIndex+args.extraText
 outfileName = CMSSW_BASE+"/src/MLShEx_CorrL1Muons/Configuration/test/TMVATraining/"+dataloaderName
 outputFile = TFile.Open( outfileName+".root", "RECREATE" )
 
@@ -70,10 +71,10 @@ factory = TMVA.Factory( "TMVARegression", outputFile,"!V:!Silent:Color:DrawProgr
 
 dataloader = TMVA.DataLoader(dataloaderName)
 
-dataloader.AddVariable( "L1muon_ptCorr", "p_{T,corrected}(L1 #mu)", "GeV", 'F' )
-dataloader.AddVariable( "L1muon_eta", "#eta(L1 #mu)", "", 'F' )
-dataloader.AddVariable( "L1muon_phiAtVtx", "#phiAtVtx(L1 #mu)", "", 'F' )
-dataloader.AddVariable( "L1muon_charge", "charge(L1 #mu)", "", 'I' )
+dataloader.AddVariable( "L1muon_ptCorr", "p_{T,corrected}(L1 #mu)", "GeV", "F" )
+dataloader.AddVariable( "L1muon_eta", "#eta(L1 #mu)", "", "F" )
+dataloader.AddVariable( "L1muon_phiAtVtx", "#phiAtVtx(L1 #mu)", "", "F" )
+dataloader.AddVariable( "L1muon_charge", "charge(L1 #mu)", "", "I" )
 
 dataloader.AddTarget( "deltaPhi(L1muon_phiAtVtx,recomuon_phi)" )
 
@@ -91,8 +92,28 @@ print mycut
 preparationString = "nTrain_Regression=25000:nTest_Regression=25000:SplitMode=Random:NormMode=NumEvents:!V"
 dataloader.PrepareTrainingAndTestTree( mycut, preparationString )
 
+# Define model
+model = Sequential()
+if args.model == "1LMedium":
+    model.add(Dense(16, input_dim=4,activation="relu"))
+elif args.model == "3LWide":
+    model.add(Dense(16,input_dim=4,activation="relu"))
+    model.add(Dense(32, activation="relu"))
+    model.add(Dense(12, activation="relu"))
+else:
+    raise RuntimeError("Unknown model")
+model.add(Dense(1))
+
+# Set loss and optimizer
+model.compile(loss="mse", optimizer="rmsprop", metrics=["mae"])
+
+# Store model to file
+model.save(args.model+".h5")
+model.summary()
+
 
 factory.BookMethod( dataloader,  TMVA.Types.kMLP, "MLP", "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=300:HiddenLayers=N+20:TestRate=6:TrainingMethod=BFGS:Sampling=0.6:SamplingEpoch=0.8:ConvergenceImprove=1e-4:ConvergenceTests=15" )
+factory.BookMethod(dataloader, TMVA.Types.kPyKeras,"PyKeras","!V:VarTransform=G:FilenameModel="+args.model+".h5:NumEpochs=20:BatchSize=32")
 
 factory.TrainAllMethods();
 factory.TestAllMethods();
