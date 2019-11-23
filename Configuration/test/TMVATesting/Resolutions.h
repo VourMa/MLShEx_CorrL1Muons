@@ -16,6 +16,7 @@
 #include "TMVA/Tools.h"
 #include "TMVA/TMVAGui.h"
 #include "TMVA/Reader.h"
+#include "TMVA/PyMethodBase.h"
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -53,7 +54,7 @@ public :
    TMVA::Reader* reader[3] = {};
    
    TString trainingDir = "/eos/cms/store/cmst3/user/evourlio/L1uGMTAnalyzer_Trees/TMVATrainingFiles/"; //Change accordingly
-   TString era = "BCEF";
+   TString era = "BCEF"; //Change accordingly
    float L1muon_ptCorr_, L1muon_pt_, L1muon_eta_,L1muon_phi_, L1muon_charge_, L1muon_index_;
 
    Resolutions(TTree *tree=0, TString etaOrIndex = "Eta");
