@@ -35,7 +35,7 @@ cd MLShEx_CorrL1Muons/Configuration/
    cd ../test/TMVATraining  
    python TMVATraining.py
    ```
-* Understand [_TMVATraining.py_](../exercise/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
+* Understand [_TMVATraining.py_](../exercise_CMSDASServer/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise_CMSDASServer/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
 * If one wants to inspect the .root produced the TMVA, one can run ROOT with:  
    ```
    root -l  
@@ -44,13 +44,11 @@ cd MLShEx_CorrL1Muons/Configuration/
    _FILENAME_ can be _TMVARegression_TFB_EraB_GuysA_Eta.root_, _TMVARegression_TFO_EraB_GuysA_Eta.root_ or _TMVARegression_TFE_EraB_GuysA_Eta.root_.
 * Run  
    ```
-   cd ../TMVATesting  
-   
-   python Resolutions.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
-   python Resolutions.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000  
+   python ../TMVATesting/Resolutions.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
+   python ../TMVATesting/Resolutions.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000  
 
-   python MassSpectrum.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
-   python MassSpectrum.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000  
+   python ../TMVATesting/MassSpectrum.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
+   python ../TMVATesting/MassSpectrum.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000  
    
    cd ../plotter  
    
@@ -63,11 +61,47 @@ cd MLShEx_CorrL1Muons/Configuration/
 * Inspect the _.png_ files with `eog` and discussion on the results.
 * **Change _trainingDir_ and _era_ in _Resolutions.h_ and _MassSpectrum.h_** and repeat the testing commands to test your training!
 
+## Bonus (Implement a Keras Neural Network)
+* Understand [_../TMVATraining/TMVARegression.py_](../exercise_CMSDASServer/Configuration/test/TMVATraining/TMVARegression.py).
+* Run
+   ```
+   cd $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATraining/
+   python TMVARegression.py  --TF B  
+   python TMVARegression.py  --TF O  
+   python TMVARegression.py  --TF E  
+   ```
+   The `--model` flag can be used to change the architecture of the model.
+* After the training is done, the testing can be done by appropriately modifying:
+   * Lines 56, 57, 89 of _Resolution.h_ and lines 64, 65, 97 _MassSpectrum.h_  
+   * Line 101 of _Resolution.C_ and line 62 of _MassSpectrum.C_  
+   * Line 29 of _Resolution.py_ and _MassSpectrum.py_
+   
+   to use the PyKeras training and write new files. Then, run
+   ```
+   python ../TMVATesting/Resolutions.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
+   python ../TMVATesting/Resolutions.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000  
+
+   python ../TMVATesting/MassSpectrum.py --dataset ZeroBias --year 2018 --era ABC --maxEvents 100000000  
+   python ../TMVATesting/MassSpectrum.py --dataset Charmonium --year 2017 --era B --maxEvents 5000000
+   ```
+* To produce the final plots, change the `--dir` according to the modification of line 29 of _Resolution.py_ and _MassSpectrum.py_ running:
+   ```
+   cd ../plotter  
+   
+   python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/NEWNAME --sample ZeroBias_PyKeras  
+   python plotter.py --test Resolutions --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/NEWNAME --sample Charmonium_PyKeras 
+
+   python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/NEWNAME --sample ZeroBias_PyKeras  
+   python plotter.py --test MassSpectrum --dir $CMSSW_BASE/src/MLShEx_CorrL1Muons/Configuration/test/TMVATesting/NEWNAME --sample Charmonium_PyKeras
+   ```
+   
+   __Disclaimer:__ This training is not expected to work better out of the box. Changes are needed in the architecture of the NN. If someone manages to make this work, they can send me the results via email to discuss them.
+
 ## Bonus (Understanding the code and implementing the reco muon propagation to the muon stations)
-* Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise/Configuration/plugins/L1uGMTAnalyzer.cc).
-* Understand [_python/ana.py_](../exercise/Configuration/python/ana.py).
-* Inspect [_python/crabConfig.py_](../exercise/Configuration/python/crabConfig.py).
-* Understand [_test/skimming/skimming.py_](../exercise/Configuration/test/skimming/skimming.py), [_test/skimming/skimming.h_](../exercise/Configuration/test/skimming/skimming.h), [_test/skimming/skimming.C_](../exercise/Configuration/test/skimming/skimming.C).
+* Understand [_plugins/L1uGMTAnalyzer.cc_](../exercise_CMSDASServer/Configuration/plugins/L1uGMTAnalyzer.cc).
+* Understand [_python/ana.py_](../exercise_CMSDASServer/Configuration/python/ana.py).
+* Inspect [_python/crabConfig.py_](../exercise_CMSDASServer/Configuration/python/crabConfig.py).
+* Understand [_test/skimming/skimming.py_](../exercise_CMSDASServer/Configuration/test/skimming/skimming.py), [_test/skimming/skimming.h_](../exercise_CMSDASServer/Configuration/test/skimming/skimming.h), [_test/skimming/skimming.C_](../exercise_CMSDASServer/Configuration/test/skimming/skimming.C).
 * **Build _plugins/L1uGMTAnalyzer.cc_** to include reco muon propagation to the muon stations:  
    After line:
    ```c++
@@ -267,6 +301,6 @@ cd MLShEx_CorrL1Muons/Configuration/
    python skimming.py
    ```
 * Inspect _skimmedL1uGMTAnalyzer.root_.
-* Understand [_test/TMVATesting/Resolutions.py_](../exercise/Configuration/test/TMVATesting/Resolutions.py), [_test/TMVATesting/Resolutions.h_](../exercise/Configuration/test/TMVATesting/Resolutions.h), [_test/TMVATesting/Resolutions.C_](../exercise/Configuration/test/TMVATesting/Resolutions.C).
-* Understand [_test/TMVATesting/MassSpectrum.py_](../exercise/Configuration/test/TMVATesting/MassSpectrum.py), [_test/TMVATesting/MassSpectrum.h_](../exercise/Configuration/test/TMVATesting/MassSpectrum.h), [_test/TMVATesting/MassSpectrum.C_](../exercise/Configuration/test/TMVATesting/MassSpectrum.C).
-* Understand [_plotter.py_](../exercise/Configuration/test/plotter/plotter.py).
+* Understand [_test/TMVATesting/Resolutions.py_](../exercise_CMSDASServer/Configuration/test/TMVATesting/Resolutions.py), [_test/TMVATesting/Resolutions.h_](../exercise_CMSDASServer/Configuration/test/TMVATesting/Resolutions.h), [_test/TMVATesting/Resolutions.C_](../exercise_CMSDASServer/Configuration/test/TMVATesting/Resolutions.C).
+* Understand [_test/TMVATesting/MassSpectrum.py_](../exercise_CMSDASServer/Configuration/test/TMVATesting/MassSpectrum.py), [_test/TMVATesting/MassSpectrum.h_](../exercise_CMSDASServer/Configuration/test/TMVATesting/MassSpectrum.h), [_test/TMVATesting/MassSpectrum.C_](../exercise_CMSDASServer/Configuration/test/TMVATesting/MassSpectrum.C).
+* Understand [_plotter.py_](../exercise_CMSDASServer/Configuration/test/plotter/plotter.py).
