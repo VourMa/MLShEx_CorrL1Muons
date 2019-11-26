@@ -32,7 +32,7 @@ cd MLShEx_CorrL1Muons/Configuration/
 * Discussion on the TMVA.
 * Run  
    ```
-   cd ../test/TMVATraining  
+   cd ../TMVATraining  
    python TMVATraining.py
    ```
 * Understand [_TMVATraining.py_](../exercise_CMSDASServer/Configuration/test/TMVATraining/TMVATraining.py), [_TMVARegression.C_](../exercise_CMSDASServer/Configuration/test/TMVATraining/TMVARegression.C) and inspect the input files.
